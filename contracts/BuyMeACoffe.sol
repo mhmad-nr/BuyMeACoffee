@@ -54,8 +54,10 @@ contract BuyMeACoffe {
     // }
 
     function SingUp() public {
-        Account memory newAccount = Account(msg.sender, 0, new Memo[](0));
-        s_accounts[msg.sender].newAccount;
+        // Memo memory empthyMemo = new Memo(0);
+        Account memory newAccount =  Account(msg.sender, 0,  Memo());
+
+        // s_accounts[msg.sender] = newAccount;
     }
 
     modifier onlyOwner() {
