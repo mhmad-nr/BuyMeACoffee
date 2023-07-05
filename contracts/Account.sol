@@ -8,44 +8,55 @@ import {Struct} from "./lib/Struct.sol";
  */
 contract Account {
     error Account__BalanceIsZero();
-
+    event MemoEvent(
+        address indexed from,
+        uint256 timestamp,
+        string name,
+        string message
+    );
     address public immutable i_address;
-    uint256 public s_balance;
-    Struct.Memo[] public s_memos;
+    uint256 private s_balance;
+    Struct.Memo[] private s_memos;
 
     constructor(address _address) {
         i_address = _address;
         s_balance = 0;
     }
 
-    function addNewMemo(
-        address _from,
-        uint256 _timestamp,
-        uint256 _amount,
-        string memory _name,
-        string memory _message
-    ) public {
+    function getBalance() public view  returns (uint256) {
+        return s_balance;
+    }
+    function getMemos() public view  returns (Struct.Memo[] memory) {
+        return s_memos;
+    }
+
+    function buyACoffee(address _sender,uint256 _value, string memory _name, string memory _message)
+        public
+        payable
+    {
         Struct.Memo memory newMemo = Struct.Memo(
-            _from,
-            _timestamp,
-            _amount,
+            _sender,
+            block.timestamp,
+            _value,
             _name,
             _message
         );
         s_memos.push(newMemo);
-    }
 
     // all actions for balance account
-    function inBalance(uint256 _amount) public returns (uint256) {
-        uint256 newBalance = _amount + s_balance;
+       uint256 newBalance = _value + s_balance;
         s_balance = newBalance;
-        return newBalance;
+
+        emit MemoEvent(msg.sender, block.timestamp, _name, _message);
     }
 
-    function withdraw() public returns (uint256) {
+
+    function withdraw() public  returns (uint256) {
         uint256 currentBalance = s_balance;
         if (currentBalance == 0) revert Account__BalanceIsZero();
         s_balance = 0;
         return currentBalance;
     }
+
+    
 }

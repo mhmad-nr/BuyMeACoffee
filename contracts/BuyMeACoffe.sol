@@ -1,67 +1,77 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
-
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
-
-/**@title A sample Raffle Contract
- * @author Patrick Collins
- * @notice This contract is for creating a sample raffle contract
- * @dev This implements the Chainlink VRF Version 2
- */
+import {Account} from "./Account.sol";
+import {Struct} from "./lib/Struct.sol";
 
 contract BuyMeACoffe {
     // ----------------------------------------------------------------
-    error FundMe__NotOwner();
+    error BuyMeACoffe__NotOwner();
+    error BuyMeACoffe__SignedUp();
+    error BuyMeACoffe__NotSignedUp();
+    error BuyMeACoffe__ValueShouldBeMoreThanZero();
 
-    error FundMe__NotExist(address AccountAddress);
-
-    event MemoEvent(
-        address indexed from,
-        uint256 timestamp,
-        string name,
-        string message
-    );
-
-    struct Memo {
-        address from;
-        uint256 timestamp;
-        string name;
-        string message;
+    struct AccountStruct {
+        Account account;
+        bool isValue;
     }
-
-    struct Account {
-        address Address;
-        uint256 Balance;
-        Memo[] memos;
-    }
-
-    address payable private immutable i_owner;
-    mapping(address => Account) private s_accounts;
-
-    //     event Withdrawal(uint amount, uint when);
+    address immutable i_owner;
+    mapping(address => AccountStruct) private s_accounts;
 
     constructor() {
-        i_owner = payable(msg.sender);
+        i_owner = msg.sender;
     }
-
-    function getOwner() public view onlyOwner returns (address) {
-        return i_owner;
-    }
-
-    // function isExist() private returns (bool _isExist) {
-    //     if (s_accounts[msg.sender]) throw; // duplicate key
-    // }
 
     function SingUp() public {
-        // Memo memory empthyMemo = new Memo(0);
-        Account memory newAccount =  Account(msg.sender, 0,  Memo());
+        if (isExist(msg.sender)) revert BuyMeACoffe__SignedUp();
 
-        // s_accounts[msg.sender] = newAccount;
+        Account newAccount = new Account(msg.sender);
+        s_accounts[msg.sender] = AccountStruct(newAccount, true);
     }
 
-    modifier onlyOwner() {
-        if (msg.sender != i_owner) revert FundMe__NotOwner();
-        _;
+    function getAddressBalance() public view returns (uint256) {
+        if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
+
+        return s_accounts[msg.sender].account.getBalance();
+    }
+
+    function getAddressMemos() public view returns (Struct.Memo[] memory) {
+        if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
+
+        return s_accounts[msg.sender].account.getMemos();
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function buyCoffee(
+        address _address,
+        string memory _name,
+        string memory _message
+    ) public payable {
+        // Must accept more than 0 ETH for a coffee.
+        if (msg.value <= 0) revert BuyMeACoffe__ValueShouldBeMoreThanZero();
+
+        if (!isExist(_address)) revert BuyMeACoffe__NotSignedUp();
+
+        s_accounts[_address].account.buyACoffee(
+            msg.sender,
+            msg.value,
+            _name,
+            _message
+        );
+    }
+
+    function withdraw() public {
+        if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
+        uint256 balance = s_accounts[msg.sender].account.withdraw();
+        payable(msg.sender).transfer(balance);
+    }
+
+    function isExist(address id) private view returns (bool) {
+        if (s_accounts[id].isValue) {
+            return true;
+        }
+        return false;
     }
 }
