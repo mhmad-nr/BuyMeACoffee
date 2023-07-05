@@ -14,14 +14,10 @@ contract BuyMeACoffe {
         Account account;
         bool isValue;
     }
-    address immutable i_owner;
     mapping(address => AccountStruct) private s_accounts;
 
-    constructor() {
-        i_owner = msg.sender;
-    }
-
     function SingUp() public {
+        // check if the account is already signed up
         if (isExist(msg.sender)) revert BuyMeACoffe__SignedUp();
 
         Account newAccount = new Account(msg.sender);
@@ -29,19 +25,17 @@ contract BuyMeACoffe {
     }
 
     function getAddressBalance() public view returns (uint256) {
+        //check if the account is already not signed up
         if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
 
         return s_accounts[msg.sender].account.getBalance();
     }
 
     function getAddressMemos() public view returns (Struct.Memo[] memory) {
+        //check if the account is already not signed up
         if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
 
         return s_accounts[msg.sender].account.getMemos();
-    }
-
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
     }
 
     function buyCoffee(
@@ -63,13 +57,15 @@ contract BuyMeACoffe {
     }
 
     function withdraw() public {
+        //check if the account is already not signed up
         if (!isExist(msg.sender)) revert BuyMeACoffe__NotSignedUp();
+        
         uint256 balance = s_accounts[msg.sender].account.withdraw();
         payable(msg.sender).transfer(balance);
     }
 
-    function isExist(address id) private view returns (bool) {
-        if (s_accounts[id].isValue) {
+    function isExist(address _address) private view returns (bool) {
+        if (s_accounts[_address].isValue) {
             return true;
         }
         return false;
