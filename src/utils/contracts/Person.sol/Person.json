@@ -12,12 +12,12 @@
   },
   {
     "inputs": [],
-    "name": "Account__BalanceIsZero",
+    "name": "Person__BalanceIsZero",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "Account__ValueMustBeMoreThanOneGwei",
+    "name": "Person__ValueMustBeMoreThanOneGwei",
     "type": "error"
   },
   {
@@ -101,7 +101,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct Account.Memo[]",
+        "internalType": "struct Person.Memo[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -111,10 +111,10 @@
   },
   {
     "inputs": [],
-    "name": "i_owner",
+    "name": "getOwner",
     "outputs": [
       {
-        "internalType": "address payable",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }

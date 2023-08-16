@@ -3,15 +3,15 @@
 pragma solidity ^0.8.9;
 
 // Errors
-error Account__BalanceIsZero();
-error Account__OnlyOwner();
-error Account__ValueMustBeMoreThanOneGwei();
+error Person__BalanceIsZero();
+error Person__OnlyOwner();
+error Person__ValueMustBeMoreThanOneGwei();
 
 /**@title Account contract
  * @author mohammad norouzi
  * @notice This contract deploy only by BuyMeACoffee contract
  */
-contract Account {
+contract Person {
     //Type declaration
     struct Memo {
         address from;
@@ -23,7 +23,7 @@ contract Account {
 
     //State variables
     uint256 private constant MINIMUN_COFFEE_PRICE = 1e9;
-    address payable public immutable i_owner;
+    address payable private immutable i_owner;
     Memo[] private s_memos;
 
     //Events
@@ -47,6 +47,11 @@ contract Account {
         i_owner = payable(_address);
     }
 
+    function getOwner() public view returns (address) {
+        // return address of the owner of the contract
+        return i_owner;
+    }
+
     function getMemos() public view onlyOwner returns (Memo[] memory) {
         // return all of memos
         return s_memos;
@@ -58,7 +63,7 @@ contract Account {
     ) public payable {
         // check if msg.value is less than MINIMUN_COFFEE_PRICE trow an error
         if (msg.value < MINIMUN_COFFEE_PRICE)
-            revert Account__ValueMustBeMoreThanOneGwei();
+            revert Person__ValueMustBeMoreThanOneGwei();
         // create a new Memo
         Memo memory newMemo = Memo(
             msg.sender,
@@ -76,7 +81,7 @@ contract Account {
 
     function withdraw() public payable onlyOwner returns (bool isSuccessful) {
         // check if balance of the contract is zero trwo an error
-        if (address(this).balance == 0) revert Account__BalanceIsZero();
+        if (address(this).balance == 0) revert Person__BalanceIsZero();
         isSuccessful = i_owner.send(address(this).balance);
     }
 }

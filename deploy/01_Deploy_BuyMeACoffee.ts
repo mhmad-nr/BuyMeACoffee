@@ -31,5 +31,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   fs.writeFileSync('./src/utils/contracts/buyMeACoffee.sol/buyMeACoffeeAddress.json', JSON.stringify(buyMeACoffeeAddress))
 
 };
+func.tags = ["all", 'BuyMeACoffee'];
 export default func;
-func.tags = ['BuyMeACoffee'];

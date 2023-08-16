@@ -3,7 +3,7 @@
 pragma solidity ^0.8.9;
 
 // Import
-import {Account} from "./Account.sol";
+import {Person} from "./Person.sol";
 
 // Error
 error BuyMeACoffe__SignedUpBefore();
@@ -14,7 +14,7 @@ error BuyMeACoffe__SignedUpBefore();
  */
 contract BuyMeACoffee {
     // State variables
-    mapping(address => address) private s_accounts;
+    mapping(address => address) private s_person;
 
     // Funcntions section
     function SingUp() public {
@@ -23,16 +23,15 @@ contract BuyMeACoffee {
             revert BuyMeACoffe__SignedUpBefore();
 
         //create a new account for new client
-        Account newAccount = new Account(msg.sender);
+        Person newPerson = new Person(msg.sender);
 
         //add new account to other accounts
-        s_accounts[msg.sender] = address(newAccount);
+        s_person[msg.sender] = address(newPerson);
     }
 
     function SearchAccount(address _address) public view returns (address) {
-        
         // read accounts address as currentAddress from storage
-        address currentAddress = s_accounts[_address];
+        address currentAddress = s_person[_address];
 
         // check if the _address is already signed up
         if (currentAddress == address(0)) {
