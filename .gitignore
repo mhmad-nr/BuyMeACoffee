@@ -133,3 +133,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .lock
+cache/solidity-files-cache.json
+package-lock.json

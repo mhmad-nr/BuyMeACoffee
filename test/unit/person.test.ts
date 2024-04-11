@@ -1,7 +1,7 @@
 
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { assert, expect } from "chai"
-import { deployments, ethers, getNamedAccounts } from "hardhat"
+import { ethers } from "hardhat"
 import { Person } from "../../typechain-types"
 describe("Person", () => {
     let person: Person

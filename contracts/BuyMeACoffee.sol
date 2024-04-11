@@ -17,7 +17,7 @@ contract BuyMeACoffee {
     mapping(address => address) private s_person;
 
     // Funcntions section
-    function SingUp() public {
+    function SingUp() public returns (address) {
         // check if the account is already signed up
         if (SearchAccount(msg.sender) != address(0))
             revert BuyMeACoffe__SignedUpBefore();
@@ -26,7 +26,9 @@ contract BuyMeACoffee {
         Person newPerson = new Person(msg.sender);
 
         //add new account to other accounts
-        s_person[msg.sender] = address(newPerson);
+        address accountAddress = address(newPerson);
+        s_person[msg.sender] = accountAddress;
+        return accountAddress;
     }
 
     function SearchAccount(address _address) public view returns (address) {

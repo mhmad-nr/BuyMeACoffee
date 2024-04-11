@@ -1,18 +1,10 @@
-import { HardhatUserConfig, task } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox"
 import 'hardhat-deploy'
 import 'dotenv/config'
-import 'hardhat-abi-exporter'
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ""
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
 
 const config: HardhatUserConfig = {
   solidity: "0.8.18",
@@ -26,11 +18,6 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY],
       chainId: 11155111,
     },
-  },
-  abiExporter: {
-    runOnCompile: true,
-    clear: true,
-    path: "./src/utils"
   },
   namedAccounts: {
     deployer: {

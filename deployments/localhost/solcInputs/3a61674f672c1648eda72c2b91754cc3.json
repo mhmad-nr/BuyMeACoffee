@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/BuyMeACoffee.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\r\n// Pragma\r\npragma solidity ^0.8.9;\r\n\r\n// Import\r\nimport {Person} from \"./Person.sol\";\r\n\r\n// Error\r\nerror BuyMeACoffe__SignedUpBefore();\r\n\r\n/**@title BuyMeACoffee contract\r\n * @author mohammad norouzi\r\n * @notice This contract manages the client contract address\r\n */\r\ncontract BuyMeACoffee {\r\n    // State variables\r\n    mapping(address => address) private s_person;\r\n\r\n    // Funcntions section\r\n    function SingUp() public returns (address) {\r\n        // check if the account is already signed up\r\n        if (SearchAccount(msg.sender) != address(0))\r\n            revert BuyMeACoffe__SignedUpBefore();\r\n\r\n        //create a new account for new client\r\n        Person newPerson = new Person(msg.sender);\r\n\r\n        //add new account to other accounts\r\n        address accountAddress = address(newPerson);\r\n        s_person[msg.sender] = accountAddress;\r\n        return accountAddress;\r\n    }\r\n\r\n    function SearchAccount(address _address) public view returns (address) {\r\n        // read accounts address as currentAddress from storage\r\n        address currentAddress = s_person[_address];\r\n\r\n        // check if the _address is already signed up\r\n        if (currentAddress == address(0)) {\r\n            return address(0);\r\n        }\r\n        return currentAddress;\r\n    }\r\n}\r\n"
+    },
+    "contracts/Person.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\n// Pragma\r\npragma solidity ^0.8.9;\r\n\r\n// Errors\r\nerror Person__BalanceIsZero();\r\nerror Person__OnlyOwner();\r\nerror Person__ValueMustBeMoreThanOneGwei();\r\n\r\n/**@title Account contract\r\n * @author mohammad norouzi\r\n * @notice This contract deploy only by BuyMeACoffee contract\r\n */\r\ncontract Person {\r\n    //Type declaration\r\n    struct Memo {\r\n        address from;\r\n        uint256 timestamp;\r\n        uint256 amount;\r\n        string name;\r\n        string message;\r\n    }\r\n\r\n    //State variables\r\n    uint256 private constant MINIMUN_COFFEE_PRICE = 1e9;\r\n    address payable private immutable i_owner;\r\n    Memo[] private s_memos;\r\n\r\n    //Events\r\n    event MemoEvent(\r\n        address indexed from,\r\n        uint256 timestamp,\r\n        string name,\r\n        string message\r\n    );\r\n\r\n    //Modifiers section\r\n    modifier onlyOwner() {\r\n        // check if msg.sender is owner of contract\r\n        require(msg.sender == i_owner);\r\n        _;\r\n    }\r\n\r\n    //Functions section\r\n    constructor(address _address) {\r\n        // assign _address to the owner of the contract\r\n        i_owner = payable(_address);\r\n    }\r\n\r\n    function getOwner() public view returns (address) {\r\n        // return address of the owner of the contract\r\n        return i_owner;\r\n    }\r\n\r\n    function getMemos() public view onlyOwner returns (Memo[] memory) {\r\n        // return all of memos\r\n        return s_memos;\r\n    }\r\n\r\n    function buyACoffee(\r\n        string memory _name,\r\n        string memory _message\r\n    ) public payable {\r\n        // check if msg.value is less than MINIMUN_COFFEE_PRICE trow an error\r\n        if (msg.value < MINIMUN_COFFEE_PRICE)\r\n            revert Person__ValueMustBeMoreThanOneGwei();\r\n        // create a new Memo\r\n        Memo memory newMemo = Memo(\r\n            msg.sender,\r\n            block.timestamp,\r\n            msg.value,\r\n            _name,\r\n            _message\r\n        );\r\n        // push the new Memo to memos\r\n        s_memos.push(newMemo);\r\n\r\n        // emit an event\r\n        emit MemoEvent(msg.sender, block.timestamp, _name, _message);\r\n    }\r\n\r\n    function withdraw() public payable onlyOwner returns (bool isSuccessful) {\r\n        // check if balance of the contract is zero trwo an error\r\n        if (address(this).balance == 0) revert Person__BalanceIsZero();\r\n        isSuccessful = i_owner.send(address(this).balance);\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
