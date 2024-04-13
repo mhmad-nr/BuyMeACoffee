@@ -37,9 +37,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // create a json file containing the address and abi for BuyMeACoffee
   const { abi, address } = buyMeACoffee;
-  fs.writeFileSync(
+  fs.writeFile(
     "./ABIs/buyMeACoffee.json",
-    JSON.stringify({ abi, address })
+    JSON.stringify({ abi, address }),
+    () => log("Contract ABI updated successfully")
   );
 };
 func.tags = ["all", "BuyMeACoffee"];
