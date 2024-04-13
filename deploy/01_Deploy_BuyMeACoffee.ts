@@ -1,35 +1,46 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { DeployFunction } from 'hardhat-deploy/types'
-import fs from "fs"
-import { VERIFICATION_BLOCK_CONFIRMATIONS, developmentChains } from "../helper-hardhat-config"
-
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { DeployFunction } from "hardhat-deploy/types";
+import fs from "fs";
+import { verify } from "../utils/verify";
+import {
+  VERIFICATION_BLOCK_CONFIRMATIONS,
+  developmentChains,
+} from "../helper-hardhat-config";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts, network } = hre;
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
-
-  log("----------------------------------------------------------------")
+  log("----------------------------------------------------------------");
 
   const waitConfirmations = developmentChains.includes(network.name)
     ? 1
-    : VERIFICATION_BLOCK_CONFIRMATIONS
-  const args: any[] = []
+    : VERIFICATION_BLOCK_CONFIRMATIONS;
+  const args: any[] = [];
 
-  const buyMeACoffee = await deploy('BuyMeACoffee', {
+  const buyMeACoffee = await deploy("BuyMeACoffee", {
     from: deployer,
     log: true,
     args,
     waitConfirmations,
   });
+  if (
+    !developmentChains.includes(network.name) &&
+    process.env.ETHERSCAN_API_KEY
+  ) {
+    log("Verifying...");
+    await verify(buyMeACoffee.address, args);
+  }
 
-  log("----------------------------------------------------------------")
+  log("----------------------------------------------------------------");
 
-  // create a json file containing the address for BuyMeACoffee 
-  const buyMeACoffeeAddress = buyMeACoffee.address
-  fs.writeFileSync('./src/utils/contracts/buyMeACoffee.sol/buyMeACoffeeAddress.json', JSON.stringify(buyMeACoffeeAddress))
-
+  // create a json file containing the address and abi for BuyMeACoffee
+  const { abi, address } = buyMeACoffee;
+  fs.writeFileSync(
+    "./ABIs/buyMeACoffee.json",
+    JSON.stringify({ abi, address })
+  );
 };
-func.tags = ["all", 'BuyMeACoffee'];
+func.tags = ["all", "BuyMeACoffee"];
 export default func;
