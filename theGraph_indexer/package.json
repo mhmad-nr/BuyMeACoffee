@@ -1,13 +1,13 @@
 {
-  "name": "second-nftmarketplace",
+  "name": "buy-me-coffee",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ second-nftmarketplace",
-    "create-local": "graph create --node http://localhost:8020/ second-nftmarketplace",
-    "remove-local": "graph remove --node http://localhost:8020/ second-nftmarketplace",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 second-nftmarketplace",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ buy-me-coffee",
+    "create-local": "graph create --node http://localhost:8020/ buy-me-coffee",
+    "remove-local": "graph remove --node http://localhost:8020/ buy-me-coffee",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 buy-me-coffee",
     "test": "graph test"
   },
   "dependencies": {

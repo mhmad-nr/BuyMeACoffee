@@ -1,99 +1,57 @@
 import { newMockEvent } from "matchstick-as"
 import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
-import {
-  ItemBought,
-  ItemCancelled,
-  tokenListed
-} from "../generated/Contract/Contract"
+import { MemoEvent, SingUpEvent } from "../generated/Contract/Contract"
 
-export function createItemBoughtEvent(
-  buyer: Address,
-  nftAddress: Address,
-  tokenId: BigInt,
-  price: BigInt
-): ItemBought {
-  let itemBoughtEvent = changetype<ItemBought>(newMockEvent())
+export function createMemoEventEvent(
+  from: Address,
+  timestamp: BigInt,
+  amount: BigInt,
+  name: string,
+  message: string
+): MemoEvent {
+  let memoEventEvent = changetype<MemoEvent>(newMockEvent())
 
-  itemBoughtEvent.parameters = new Array()
+  memoEventEvent.parameters = new Array()
 
-  itemBoughtEvent.parameters.push(
-    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+  memoEventEvent.parameters.push(
+    new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
   )
-  itemBoughtEvent.parameters.push(
+  memoEventEvent.parameters.push(
     new ethereum.EventParam(
-      "nftAddress",
-      ethereum.Value.fromAddress(nftAddress)
+      "timestamp",
+      ethereum.Value.fromUnsignedBigInt(timestamp)
     )
   )
-  itemBoughtEvent.parameters.push(
-    new ethereum.EventParam(
-      "tokenId",
-      ethereum.Value.fromUnsignedBigInt(tokenId)
-    )
+  memoEventEvent.parameters.push(
+    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
   )
-  itemBoughtEvent.parameters.push(
-    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+  memoEventEvent.parameters.push(
+    new ethereum.EventParam("name", ethereum.Value.fromString(name))
+  )
+  memoEventEvent.parameters.push(
+    new ethereum.EventParam("message", ethereum.Value.fromString(message))
   )
 
-  return itemBoughtEvent
+  return memoEventEvent
 }
 
-export function createItemCancelledEvent(
-  seller: Address,
-  nftAddress: Address,
-  tokenId: BigInt
-): ItemCancelled {
-  let itemCancelledEvent = changetype<ItemCancelled>(newMockEvent())
+export function createSingUpEventEvent(
+  from: Address,
+  timestamp: BigInt
+): SingUpEvent {
+  let singUpEventEvent = changetype<SingUpEvent>(newMockEvent())
 
-  itemCancelledEvent.parameters = new Array()
+  singUpEventEvent.parameters = new Array()
 
-  itemCancelledEvent.parameters.push(
-    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
+  singUpEventEvent.parameters.push(
+    new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
   )
-  itemCancelledEvent.parameters.push(
+  singUpEventEvent.parameters.push(
     new ethereum.EventParam(
-      "nftAddress",
-      ethereum.Value.fromAddress(nftAddress)
-    )
-  )
-  itemCancelledEvent.parameters.push(
-    new ethereum.EventParam(
-      "tokenId",
-      ethereum.Value.fromUnsignedBigInt(tokenId)
+      "timestamp",
+      ethereum.Value.fromUnsignedBigInt(timestamp)
     )
   )
 
-  return itemCancelledEvent
-}
-
-export function createtokenListedEvent(
-  nftAddress: Address,
-  seller: Address,
-  tokenId: BigInt,
-  price: BigInt
-): tokenListed {
-  let tokenListedEvent = changetype<tokenListed>(newMockEvent())
-
-  tokenListedEvent.parameters = new Array()
-
-  tokenListedEvent.parameters.push(
-    new ethereum.EventParam(
-      "nftAddress",
-      ethereum.Value.fromAddress(nftAddress)
-    )
-  )
-  tokenListedEvent.parameters.push(
-    new ethereum.EventParam("seller", ethereum.Value.fromAddress(seller))
-  )
-  tokenListedEvent.parameters.push(
-    new ethereum.EventParam(
-      "tokenId",
-      ethereum.Value.fromUnsignedBigInt(tokenId)
-    )
-  )
-  tokenListedEvent.parameters.push(
-    new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
-  )
-
-  return tokenListedEvent
+  return singUpEventEvent
 }

@@ -1,31 +1,20 @@
-type ActiveItem @entity {
-  id: ID!
-  buyer: Bytes!
-  seller: Bytes!
-  nftAddress: Bytes!
-  tokenId: BigInt!
-  price: BigInt
+type MemoEvent @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes! # address
+  timestamp: BigInt! # uint256
+  amount: BigInt! # uint256
+  name: String! # string
+  message: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
 
-type ItemListed @entity {
-  id: ID!
-  seller: Bytes!
-  nftAddress: Bytes!
-  tokenId: BigInt!
-  price: BigInt
-}
-
-type ItemCanceled @entity {
-  id: ID!
-  seller: Bytes!
-  nftAddress: Bytes!
-  tokenId: BigInt!
-}
-
-type ItemBought @entity {
-  id: ID!
-  buyer: Bytes!
-  nftAddress: Bytes!
-  tokenId: BigInt!
-  price: BigInt
+type SingUpEvent @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes! # address
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }

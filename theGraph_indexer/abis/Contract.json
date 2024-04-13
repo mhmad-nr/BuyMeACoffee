@@ -1,173 +1,100 @@
 [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "name": "NftMarketplace__EthAmmountIsNotEnough",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "NftMarketplace__IsNotListed",
-    "type": "error"
-  },
+  { "inputs": [], "name": "BuyMeACoffe__BalanceIsZero", "type": "error" },
+  { "inputs": [], "name": "BuyMeACoffe__NotSignedUpBefore", "type": "error" },
+  { "inputs": [], "name": "BuyMeACoffe__SignedUpBefore", "type": "error" },
+  { "inputs": [], "name": "BuyMeACoffe__TransferFaild", "type": "error" },
   {
     "inputs": [],
-    "name": "NftMarketplace__PriceMustBeMoreThenZero",
+    "name": "BuyMeACoffe__ValueMustBeMoreThanOneGwei",
     "type": "error"
   },
-  {
-    "inputs": [],
-    "name": "NftMarketplace__SenderIsNotTheOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "NftMarketplace__TokenAlreadyListed",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "contractAddress",
-        "type": "address"
-      },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "NftMarketplace__TokenDoesNotApproved",
-    "type": "error"
-  },
-  { "inputs": [], "name": "NftMarketplace__TransferFailed", "type": "error" },
-  { "inputs": [], "name": "NftMarketplaces__ProceedsIsZero", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "buyer",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "nftAddress",
+        "name": "from",
         "type": "address"
       },
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "timestamp",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "price",
-        "type": "uint256"
-      }
-    ],
-    "name": "ItemBought",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "seller",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "nftAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "ItemCancelled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "nftAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "seller",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      }
+    ],
+    "name": "MemoEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "price",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
-    "name": "tokenListed",
+    "name": "SingUpEvent",
     "type": "event"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+      { "internalType": "string", "name": "name", "type": "string" },
+      { "internalType": "string", "name": "message", "type": "string" },
+      { "internalType": "address", "name": "to", "type": "address" }
     ],
-    "name": "buyItem",
+    "name": "buyACoffee",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "cancelItem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "getBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "getListing",
+    "inputs": [],
+    "name": "getLastMemo",
     "outputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "price", "type": "uint256" },
-          { "internalType": "address", "name": "seller", "type": "address" }
+          { "internalType": "address", "name": "from", "type": "address" },
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "message", "type": "string" }
         ],
-        "internalType": "struct NftMarketplace.Listing",
+        "internalType": "struct BuyMeACoffee.Memo",
         "name": "",
         "type": "tuple"
       }
@@ -176,41 +103,17 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "name": "getProceeds",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "name": "listNFT",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "nftAddress", "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "internalType": "uint256", "name": "newPrice", "type": "uint256" }
-    ],
-    "name": "updateItem",
+    "inputs": [],
+    "name": "singUp",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "withdrawProceeds",
+    "name": "withdraw",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   }
 ]
