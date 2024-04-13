@@ -9,7 +9,7 @@ import {
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { MemoEvent } from "../generated/schema"
 import { MemoEvent as MemoEventEvent } from "../generated/Contract/Contract"
-import { handleMemoEvent } from "../src/contract"
+import { handleMemoEvent } from "../src/buyMeACoffe"
 import { createMemoEventEvent } from "./contract-utils"
 
 // Tests structure (matchstick-as >=0.5.0)

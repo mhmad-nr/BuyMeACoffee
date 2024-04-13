@@ -1,8 +1,24 @@
 [
-  { "inputs": [], "name": "BuyMeACoffe__BalanceIsZero", "type": "error" },
-  { "inputs": [], "name": "BuyMeACoffe__NotSignedUpBefore", "type": "error" },
-  { "inputs": [], "name": "BuyMeACoffe__SignedUpBefore", "type": "error" },
-  { "inputs": [], "name": "BuyMeACoffe__TransferFaild", "type": "error" },
+  {
+    "inputs": [],
+    "name": "BuyMeACoffe__BalanceIsZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BuyMeACoffe__NotSignedUpBefore",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BuyMeACoffe__SignedUpBefore",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BuyMeACoffe__TransferFaild",
+    "type": "error"
+  },
   {
     "inputs": [],
     "name": "BuyMeACoffe__ValueMustBeMoreThanOneGwei",
@@ -11,6 +27,12 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
       {
         "indexed": true,
         "internalType": "address",
@@ -66,9 +88,21 @@
   },
   {
     "inputs": [
-      { "internalType": "string", "name": "name", "type": "string" },
-      { "internalType": "string", "name": "message", "type": "string" },
-      { "internalType": "address", "name": "to", "type": "address" }
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
     ],
     "name": "buyACoffee",
     "outputs": [],
@@ -78,7 +112,13 @@
   {
     "inputs": [],
     "name": "getBalance",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -88,11 +128,31 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "address", "name": "from", "type": "address" },
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "string", "name": "message", "type": "string" }
+          {
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "message",
+            "type": "string"
+          }
         ],
         "internalType": "struct BuyMeACoffee.Memo",
         "name": "",

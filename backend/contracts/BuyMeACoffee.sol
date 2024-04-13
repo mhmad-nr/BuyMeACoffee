@@ -69,6 +69,7 @@ contract BuyMeACoffee {
     event SingUpEvent(address indexed from, uint256 timestamp);
 
     event MemoEvent(
+        address indexed to,
         address indexed from,
         uint256 indexed timestamp,
         uint256 amount,
@@ -127,7 +128,14 @@ contract BuyMeACoffee {
         s_users[to].lastMemo = _createMemo(name, message, msg.value);
 
         // emit an event
-        emit MemoEvent(msg.sender, block.timestamp, msg.value, name, message);
+        emit MemoEvent(
+            to,
+            msg.sender,
+            block.timestamp,
+            msg.value,
+            name,
+            message
+        );
     }
 
     function withdraw() external payable isUserExist(msg.sender) {
