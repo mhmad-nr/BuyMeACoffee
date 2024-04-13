@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", serif;
+  user-select: none;
+}
+
+#root {
+  @apply w-full ;
+}
+
+.radius {
+  border-radius: 0% 0% 50% 50% / 0% 0% 5% 5% ;
+}
+
+@layer base {
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 900;
+    src: url('./assets/font/Roboto-Black.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 700;
+    src: url('./assets/font/Roboto-Bold.ttf') format('truetype');
+
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 500;
+    src: url('./assets/font/Roboto-Medium.ttf') format('truetype');
+
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 400;
+    src: url('./assets/font/Roboto-Regular.ttf') format('truetype');
+
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 300;
+    src: url('./assets/font/Roboto-Light.ttf') format('truetype');
+
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 100;
+    src: url('./assets/font/Roboto-Thin.ttf') format('truetype');
+
+  }
+
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff00;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.modal-divider {
+  @apply w-full top-7 before_block before_w-full before_h-0.5 before_bg-Cf4 before_absolute before_top-8 before_left-0;
+}
