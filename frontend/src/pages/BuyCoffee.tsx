@@ -1,138 +1,186 @@
-import React, { useLayoutEffect, useEffect, useState } from 'react'
-import { Button } from '../components'
-import { useParams } from 'react-router-dom'
-import { useStore } from '../hooks'
-import { IPFS } from '../service'
-import { listenForTransactionMine, personContractFactory } from '../helpers'
-import { TypeForm, stageType } from '../types'
-import { ethers, providers } from 'ethers'
-
-
-
-type memo = {
-  address: string,
-  timestamp: number,
-  amount: BigInt,
-  name: string,
-  massage: string
-}
-type memos = memo[]
-type TypeState = {
-  balance: BigInt,
-  memos: memos,
-  stage: stageType
-} & TypeForm<string>
-
-
+import React, { useEffect, useState } from "react";
+import { Button, Memo } from "../components";
+import { useParams } from "react-router-dom";
+import { useStore } from "../hooks";
+import { contractProvider } from "../helpers";
+import { ethers } from "ethers";
+import { useQuery } from "@apollo/client";
+import { GET_MEMO_BY_FROM } from "../graphql";
+import { memo } from "../types/schema.type";
+type State = {
+  contract: ethers.Contract | null;
+  value: number;
+  ethPrice: number;
+  name: string;
+  text: string;
+};
 const BuyCoffee = () => {
+  const { store } = useStore();
 
-  const { store } = useStore()
-
-  const [form, setForm] = useState({
+  const [state, setState] = useState<State>({
+    contract: null,
     value: 1,
+    ethPrice: 0,
     name: "",
-    text: ''
-  })
-  const [contract, setContract] = useState<any>(null)
-  const [state, setState] = useState<TypeState>({
-    img: '',
-    balance: BigInt(0),
-    discription: "",
-    memos: [],
-    fullName: "",
-    stage: stageType.STAGE_ONE
-  })
-  const { address } = useParams()
+    text: "",
+  });
+
+  const { address } = useParams();
+  const { data, loading } = useQuery<{ memos: memo[] }>(GET_MEMO_BY_FROM, {
+    variables: { address },
+  });
+  console.log(data);
 
   useEffect(() => {
-    get()
-  }, [])
+    get();
+  }, []);
   const get = async () => {
-    setState({ ...state, stage: stageType.STAGE_LOADING })
-    if (!address) return
-    const { contract } = await personContractFactory(store.activeAccount, address)
-    const ipfsUrl = await contract.getIPFSUrl()
+    if (!address) return;
+    const { contract } = await contractProvider({
+      signerAddress: store.activeAccount,
+    });
 
-    setContract(contract)
-    const res = await IPFS().getData(ipfsUrl)
+    const res = await fetch(
+      "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
+    );
+    const ethPrice = (await res.json()).USD;
+    console.log(ethPrice);
 
-    if (res.success) {
-      const data = {
-        ...res.data,
-        img: res.data.img as string
-      }
-      setState({ ...state, ...data })
-    }
-
-
-  }
-
+    setState({ ...state, ethPrice, contract });
+  };
 
   const setValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget
-    const newValue = parseInt(value)
+    const { value } = e.currentTarget;
+    const newValue = parseInt(value);
     if (newValue <= 9) {
-      setForm({ ...form, value: newValue })
+      setState({ ...state, value: newValue });
     }
-  }
+  };
   const setInput = (e: React.FormEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget
-    setForm({ ...form, name: value })
-  }
+    const { value } = e.currentTarget;
+    setState({ ...state, name: value });
+  };
 
   const setTextarea = (e: any) => {
-    const { value } = e.currentTarget
-    setForm({ ...form, text: value })
-  }
+    const { value } = e.currentTarget;
+    setState({ ...state, text: value });
+  };
   const onBuy = async () => {
-    const value = ethers.utils.parseEther(form.value.toString())
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const res = await contract.buyACoffee(form.name, form.text, { value })
-    const r = await listenForTransactionMine(res, provider)
+    const value = ethers.parseEther(
+      ethAmount(state.value).toFixed(6).toString()
+    );
+    console.log(value);
 
-  }
+    if (!state.contract) return;
+
+    const res = await state.contract.buyACoffee(
+      state.name,
+      state.text,
+      address,
+      {
+        value,
+      }
+    );
+    // const r = await listenForTransactionMine(res, provider);
+  };
+  const ethAmount = (value: number) => {
+    return value / state.ethPrice;
+  };
   return (
-    <div className='bg-White min-h-screen'>
-      <div className='w-full flex flex-col items-center gap-y-4'>
-        <img className='w-[140px] h-[140px] rounded-full' src={state.img} />
-        <h2 className='text-3xl text-C22 font-semibold'>{state.fullName}</h2>
-      </div>
-      <div className='w-full flex mt-12'>
-        <div className='mx-auto w-[1128px]  flex gap-x-6'>
+    <div className="bg-white min-h-screen">
+      <div className="w-full flex flex-col items-center gap-y-4"></div>
+      <div className="w-full flex mt-12">
+        <div className="mx-auto w-[1128px]  flex gap-x-6">
           <div className="flex-2">
-            <div className=' border border-Cf4 p-8 rounded-xl '>
-
-              <p className='text-justify text-C4c text-sm'>{state.discription}</p>
+            <div className=" border border-Cf4 p-8 rounded-xl ">
+              <p className="text-justify text-C4c text-sm">
+                your last memos to this address
+              </p>
+              <div>
+                {data?.memos.map((memo) => {
+                  return (
+                    <>
+                      <Memo mode="start" {...memo} />
+                    </>
+                  );
+                })}
+              </div>
             </div>
           </div>
           <div className="flex-1 flex flex-col gap-y-4 border border-Cf4 p-8 rounded-xl">
-            <h2 className='text-C4c text-2xl font-semibold'>Buy <span className='text-C4'>{state.fullName}</span> a coffee</h2>
-            <input value={form.name} onChange={setInput} className='w-full  outline-none p-2  font-light border border-C4 rounded-md resize-none' placeholder='Your name' />
-            <div className='w-full flex justify-between items-center gap-x-2 rounded-md border border-Blue border-opacity-40 bg-C5f p-4'>
-              <div className='flex items-center gap-x-2'>
-                <div className='text-[40px]'>☕</div>
-                <div className='text-xl text-C4c'>X</div>
+            <h2 className="text-C4c text-2xl font-semibold"></h2>
+            <input
+              value={state.name}
+              onChange={setInput}
+              className="w-full  outline-none p-2  font-light border border-C4 rounded-md resize-none"
+              placeholder="Your name"
+            />
+            <div className="w-full flex justify-between items-center gap-x-2 rounded-md border border-Blue border-opacity-40 bg-C5f p-4">
+              <div className="flex items-center gap-x-2">
+                <div className="text-[40px]">☕</div>
+                <div className="text-xl text-C4c">X</div>
               </div>
-              <div className='flex gap-x-2'>
-                <button value={1} onClick={() => setForm({ ...form, value: 1 })}
-                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${form.value == 1 ? "bg-Blue text-White" : "bg-White"}`}>1</button>
-                <button value={3} onClick={() => setForm({ ...form, value: 3 })}
-                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${form.value == 3 ? "bg-Blue text-White" : "bg-White"}`}>3</button>
-                <button value={5} onClick={() => setForm({ ...form, value: 5 })}
-                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${form.value == 5 ? "bg-Blue text-White" : "bg-White"}`}>5</button>
-                <input value={form.value} onChange={setValue} className='bg-White outline-none w-10 h-10 font-normal text-lg text-C4c text-center border border-C4 rounded-md' type="text" />
+              <div className="flex gap-x-2">
+                <button
+                  value={1}
+                  onClick={() => setState({ ...state, value: 1 })}
+                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${
+                    state.value == 1 ? "bg-Blue text-white" : "bg-white"
+                  }`}
+                >
+                  1
+                </button>
+                <button
+                  value={3}
+                  onClick={() => setState({ ...state, value: 3 })}
+                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${
+                    state.value == 3 ? "bg-Blue text-white" : "bg-white"
+                  }`}
+                >
+                  3
+                </button>
+                <button
+                  value={5}
+                  onClick={() => setState({ ...state, value: 5 })}
+                  className={`w-10 h-10 font-semibold text-lg text-Blue flex justify-center items-center border border-Blue border-opacity-40 rounded-full ${
+                    state.value == 5 ? "bg-Blue text-white" : "bg-white"
+                  }`}
+                >
+                  5
+                </button>
+                <input
+                  value={state.value}
+                  onChange={setValue}
+                  className="bg-white outline-none w-10 h-10 font-normal text-lg text-C4c text-center border border-C4 rounded-md"
+                  type="text"
+                />
               </div>
             </div>
-            <textarea value={form.text}
+            <textarea
+              value={state.text}
               onChange={setTextarea}
-              className='w-full  outline-none p-2 bg-Cf4 font-light border border-C4 rounded-md resize-none' placeholder='Say something nice.. (optional)'></textarea>
-            <Button disable={false} type='colored' buttonStyle='full' buttonText='White' color='bg-Blue' text={`Support $ ${form.value * 5}`} onClick={onBuy} />
+              className="w-full  outline-none p-2 bg-Cf4 font-light border border-C4 rounded-md resize-none"
+              placeholder="Say something nice.. (optional)"
+            ></textarea>
+            <Button
+              disable={false}
+              type="colored"
+              buttonStyle="full"
+              buttonText="white"
+              color="bg-Blue"
+              text={`Support ${ethAmount(state.value)} ETH`}
+              onClick={onBuy}
+            />
           </div>
-
         </div>
       </div>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
-export default BuyCoffee
+export default BuyCoffee;
+
+// {
+//   "code": -32000,
+//   "message": "failed with 500000000 gas: insufficient funds for gas * price + value: address 0x6bEDAb3A759245A16ABeb16e2142629828C8c782 have 229297415862466858 want 5000000000000000000"
+// }

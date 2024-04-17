@@ -8,9 +8,9 @@ dataSources:
     name: BuyMeACoffe
     network: sepolia
     source:
-      address: "0x64A0C141D14cA5AB12dDd7f19ac40B4CeEb402e4"
+      address: "0xd168A2fffFC54129ca5c60e6C1F445F102327E21"
       abi: BuyMeACoffe
-      startBlock: 5687798
+      startBlock: 5703270
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

@@ -1,16 +1,16 @@
 import { accountType } from "../types";
 
-enum ActionKind {
+enum Action {
     ACCOUNT = "ACCOUNT",
     ACCOUNTS = "ACCOUNTS",
 }
-// save the account information
-const saveAccount = (activeAccount: accountType) => localStorage.setItem(ActionKind.ACCOUNT, activeAccount);
-const saveAccounts = (accounts: accountType[]) => localStorage.setItem(ActionKind.ACCOUNTS, JSON.stringify(accounts));
+// save the account instateation
+const saveAccount = (activeAccount: accountType) => localStorage.setItem(Action.ACCOUNT, activeAccount);
+const saveAccounts = (accounts: accountType[]) => localStorage.setItem(Action.ACCOUNTS, JSON.stringify(accounts));
 
-// save the account information
-const getAccount = () => localStorage.getItem(ActionKind.ACCOUNT);
-const getAccounts = () => localStorage.getItem(ActionKind.ACCOUNTS);
+// save the account instateation
+const getAccount = () => localStorage.getItem(Action.ACCOUNT);
+const getAccounts = () => localStorage.getItem(Action.ACCOUNTS);
 //
 const clearAll = () => localStorage.clear()
 const storage = {

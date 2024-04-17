@@ -15,7 +15,7 @@ export const Button = ({ type, text, onClick, children, buttonStyle, buttonText,
                     {type == "default" && <div className=' w-1/2 h-1/2 absolute top-1/2 left-1/2 invisible group-hover_visible group-hover_w-full group-hover_h-full group-hover_bg-Cf4 transition-all delay-100 translate-x-[-50%] translate-y-[-50%] rounded-3xl ' ></div>}
                     {type == "colored" && <div className={`w-full h-full group-hover_scale-105 absolute top-1/2 left-1/2 ${color} transition-all delay-200 translate-x-[-50%] translate-y-[-50%] rounded-3xl`} ></div>}
                 </>}
-            <div className={`w-full h-full flex justify-center items-center relative z-50 ${buttonStyle == "full" ? "justify-center" : ""}  ${disable ? "text-C4" : ""} ${!disable && (buttonText == "Black") ? "text-Black" : "text-White"}`}>
+            <div className={`w-full h-full flex justify-center items-center relative z-50 ${buttonStyle == "full" ? "justify-center" : ""}  ${disable ? "text-C4" : ""} ${!disable && (buttonText == "Black") ? "text-Black" : "text-white"}`}>
                 {children ? children : <button type="button" className={disable ? "cursor-default" : ""}>{text}</button>}
             </div>
         </div>

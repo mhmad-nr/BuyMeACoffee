@@ -22,27 +22,29 @@ export class MemoEvent__Params {
   constructor(event: MemoEvent) {
     this._event = event;
   }
+
   get to(): Address {
     return this._event.parameters[0].value.toAddress();
   }
+
   get from(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[1].value.toAddress();
   }
 
   get timestamp(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 
+  get amount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
   get name(): string {
-    return this._event.parameters[3].value.toString();
+    return this._event.parameters[4].value.toString();
   }
 
   get message(): string {
-    return this._event.parameters[4].value.toString();
+    return this._event.parameters[5].value.toString();
   }
 }
 
@@ -68,7 +70,7 @@ export class SingUpEvent__Params {
   }
 }
 
-export class Contract__getLastMemoResultValue0Struct extends ethereum.Tuple {
+export class BuyMeACoffe__getLastMemoResultValue0Struct extends ethereum.Tuple {
   get from(): Address {
     return this[0].toAddress();
   }
@@ -90,9 +92,9 @@ export class Contract__getLastMemoResultValue0Struct extends ethereum.Tuple {
   }
 }
 
-export class Contract extends ethereum.SmartContract {
-  static bind(address: Address): Contract {
-    return new Contract("Contract", address);
+export class BuyMeACoffe extends ethereum.SmartContract {
+  static bind(address: Address): BuyMeACoffe {
+    return new BuyMeACoffe("BuyMeACoffe", address);
   }
 
   getBalance(): BigInt {
@@ -110,31 +112,52 @@ export class Contract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getLastMemo(): Contract__getLastMemoResultValue0Struct {
+  getLastMemo(): BuyMeACoffe__getLastMemoResultValue0Struct {
     let result = super.call(
       "getLastMemo",
       "getLastMemo():((address,uint256,uint256,string,string))",
-      []
+      [],
     );
 
-    return changetype<Contract__getLastMemoResultValue0Struct>(
-      result[0].toTuple()
+    return changetype<BuyMeACoffe__getLastMemoResultValue0Struct>(
+      result[0].toTuple(),
     );
   }
 
-  try_getLastMemo(): ethereum.CallResult<Contract__getLastMemoResultValue0Struct> {
+  try_getLastMemo(): ethereum.CallResult<BuyMeACoffe__getLastMemoResultValue0Struct> {
     let result = super.tryCall(
       "getLastMemo",
       "getLastMemo():((address,uint256,uint256,string,string))",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Contract__getLastMemoResultValue0Struct>(value[0].toTuple())
+      changetype<BuyMeACoffe__getLastMemoResultValue0Struct>(
+        value[0].toTuple(),
+      ),
     );
+  }
+
+  getUser(_address: Address): Address {
+    let result = super.call("getUser", "getUser(address):(address)", [
+      ethereum.Value.fromAddress(_address),
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_getUser(_address: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall("getUser", "getUser(address):(address)", [
+      ethereum.Value.fromAddress(_address),
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 }
 

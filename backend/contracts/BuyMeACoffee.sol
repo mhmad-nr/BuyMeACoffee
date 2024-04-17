@@ -83,7 +83,7 @@ contract BuyMeACoffee {
 
     modifier isUserExist(address _address) {
         // read accounts address as currentAddress from storage
-        address currentAddress = _getUser(_address);
+        address currentAddress = getUser(_address);
         // check if the _address is already signed up
         if (currentAddress == address(0)) {
             revert BuyMeACoffe__NotSignedUpBefore();
@@ -101,7 +101,7 @@ contract BuyMeACoffee {
 
     function singUp() external {
         // check if the account is already signed up revert an error
-        address currentAddress = _getUser(msg.sender);
+        address currentAddress = getUser(msg.sender);
         if (currentAddress != address(0)) {
             revert BuyMeACoffe__SignedUpBefore();
         }
@@ -140,17 +140,19 @@ contract BuyMeACoffee {
 
     function withdraw() external payable isUserExist(msg.sender) {
         // check if balance of the contract is zero trwo an error
-        if (s_users[msg.sender].userBalance == 0)
-            revert BuyMeACoffe__BalanceIsZero();
 
-        bool isSuccessful = payable(msg.sender).send(
-            s_users[msg.sender].userBalance
-        );
+        uint256 userBalance = s_users[msg.sender].userBalance;
+
+        if (userBalance == 0) revert BuyMeACoffe__BalanceIsZero();
+
+        s_users[msg.sender].userBalance = 0;
+
+        bool isSuccessful = payable(msg.sender).send(userBalance);
 
         if (!isSuccessful) revert BuyMeACoffe__TransferFaild();
     }
 
-    function _getUser(address _address) internal view returns (address) {
+    function getUser(address _address) public view returns (address) {
         return s_users[_address].userAddress;
     }
 

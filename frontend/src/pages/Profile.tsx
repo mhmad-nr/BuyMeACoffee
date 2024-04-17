@@ -1,149 +1,133 @@
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { ethers } from 'ethers'
-import { concat, personContractFactory, saveToClipboard } from '../helpers'
-import { TypeForm, stageType } from '../types'
-import { IPFS } from '../service'
-import Loading from '../components/Loading'
-import { toast } from 'react-toastify'
-import { useStore } from '../hooks'
-type TypeMemo = {
-  from: string,
-  timestamp: string,
-  amount: string,
-  name: string,
-  message: string,
-  blockHash?: string
-}
-type TypeMemos = TypeMemo[]
-type TypeState = {
-  balance: BigInt,
-  memos: TypeMemos,
-  stage: stageType
-} & TypeForm<string>
+import { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { useStore } from "../hooks";
+import { useQuery } from "@apollo/client";
+import { memo } from "../types/schema.type";
+import { Avatar } from "../components";
+import { bigIntToInt, contractProvider, convertETH } from "../helpers";
+import { GET_MEMO_BY_TO } from "../graphql";
+import { Memo } from "../components";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useSDK } from "@metamask/sdk-react";
 
-const getEth = (amout: ethers.BigNumberish) => ethers.utils.formatEther(amout)
-
-
+type StateType = {
+  balance: number;
+  contract: ethers.Contract | null;
+  loading: boolean;
+  isSignedIn: boolean;
+};
 
 const Profile = () => {
-  const { store } = useStore()
-  const [state, setState] = useState<TypeState>({
-    img: '',
-    balance: BigInt(0),
-    discription: "",
-    memos: [],
-    fullName: "",
-    stage: stageType.STAGE_ONE
-  })
-  const { address } = useParams()
+  const { store } = useStore();
+  const { contract } = store;
+  const { account } = useSDK();
 
+  const [state, setState] = useState<StateType>({
+    balance: 0,
+    contract: null,
+    loading: false,
+    isSignedIn: false,
+  });
+
+  const { data, loading } = useQuery<{ memos: memo[] }>(GET_MEMO_BY_TO, {
+    variables: { address: account },
+  });
 
   useEffect(() => {
-    get()
-  }, [])
+    get();
+  }, []);
+
   const get = async () => {
-    setState({ ...state, stage: stageType.STAGE_LOADING })
-    if (!address) return
+    if (!account) return;
+    setState({ ...state, loading: true });
 
-    const { contract } = await personContractFactory(store.activeAccount, address)
-    contract.on("MemoEvent", onNewMemo);
+    const { contract } = await contractProvider({
+      signerAddress: account,
+    });
+    try {
+      const resBalance = await contract.getBalance();
+      const balance = bigIntToInt(resBalance);
 
-    const ipfsUrl = await contract.getIPFSUrl()
-    const memosResponse = await contract.getMemos()
-    const memos = memosResponse.map((m: TypeMemo) => m)
+      setState({ ...state, contract, balance, loading: false });
+    } catch (error: any) {
+      if (error.data && contract) {
+        const decodedError = contract.interface.parseError(error.data);
 
-    const res = await IPFS().getData(ipfsUrl)
-
-    if (res.success) {
-      const data = {
-        ...res.data,
-        img: res.data.img as string
+        if ("BuyMeACoffe__NotSignedUpBefore" == decodedError?.name) {
+          toast("you must sign up before");
+          setState({ ...state, contract, loading: false, isSignedIn: true });
+          // navigate("/");
+        }
+      } else {
+        console.log(`Error in widthrawContract:`, error);
       }
-      setState({ ...state, ...data, memos })
     }
+  };
 
-
-  }
-  const getDate = (timestamp: number) => new Date(parseInt(timestamp.toString())).toLocaleDateString("en-US")
-  const onNewMemo = (address: string, timestamp: ethers.BigNumberish, amount: ethers.BigNumberish, name: string, message: string,) => {
-    const memo: TypeMemo = {
-      from: address,
-      amount: amount.toString(),
-      timestamp: timestamp.toString(),
-      name,
-      message
+  const withdraw = async () => {
+    if (state.contract && state.balance > 0) {
+      try {
+        const tx = await state.contract.withdraw();
+        await tx.wait(1);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    addMemo([memo])
-  }
-  const addMemo = (newMemo: TypeMemo[]) => {
-    const currentMemos = state.memos
-    const memos = concat<TypeMemo>(currentMemos, newMemo)
-    const amount = ethers.utils.formatEther(newMemo[0].amount)
-    toast.success(`${newMemo[0].name} bought A ${amount} Coffee for you`)
-    setState({ ...state, memos })
-  }
+  };
+  console.log(state);
 
+  const canWithdraw = state.balance <= 0 || state.loading;
   return (
-    <div className='bg-White min-h-screen'>
-      <div className='w-full flex flex-col items-center gap-y-4'>
-        <div className='w-[140px] h-[140px] rounded-full border-2 border-Cf4 shadow-2xl overflow-hidden' >
-          {state.stage == stageType.STAGE_LOADING ? <Loading size='small' /> : <img className='w-full h-full' src={state.img} />}
-        </div>
-        <h2 className='text-3xl text-C22 font-semibold'>{state.stage == stageType.STAGE_LOADING ? <Loading size='small' /> : state.fullName}</h2>
-      </div>
-      <div className='w-full flex mt-12'>
-        <div className='mx-auto w-[1128px]  flex gap-x-6'>
-          <div className="flex-2">
-            <div className=' border border-Cf4 p-8 rounded-xl '>
-              {state.stage == stageType.STAGE_LOADING ? <div className='w-full h-20'>
-                <Loading size='normal' />
-              </div> : <>
-                <p className='text-justify text-C4c text-sm'>{state.discription}</p>
-              </>}
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col max-h-[390px] overflow-y-auto gap-y-4 border border-Cf4 p-8 rounded-xl">
-            {state.stage == stageType.STAGE_LOADING ? <div className='w-full h-20'><Loading size='normal' /></div>
-              : state.memos.length == 0 ? <div className='w-full h-full flex items-center justify-center'>
-                <div className='bg-Cf4 px-4 py-2 rounded-3xl'>
-                  <h2 className='text-sm'>Unfortunately, no one has bought coffee for you.</h2>
-                </div>
+    <div className="bg-white min-h-screen">
+      <div className="flex w-full px-10 pt-10">
+        <div className="flex-grow">
+          <div className="w-full flex justify-between items-center bg-base-300 rounded-xl p-6 ">
+            <div className="flex gap-x-8 ">
+              <Avatar address={account ? account : ""} size={120} />
+              <div className="flex items-center gap-x-4">
+                <p className="text-xl">Your Balance:</p>
+                {state.loading ? (
+                  <div className="skeleton bg-black w-[53px] h-[28px]"></div>
+                ) : (
+                  <p className="text-xl">
+                    {convertETH(state.balance.toString())} ETH
+                  </p>
+                )}
               </div>
-                : state.memos.map((memo, i) => (
-                  <div key={i} className='w-full border-b-4 radius border-Blue border-opacity-50 pb-4'>
-                    <div className='w-full flex justify-between items-center'>
-                      <span className='text-xs'>From: <span className='text-Blue text-sm font-semibold'>{memo.name}</span></span>
-                      <span className='text-sm text-C4c font-semibold'>{memo.timestamp}</span>
-                    </div>
-                    <div className='my-2'>
-                      <p className='text-justify text-C4c leading-5 text-xs'>{memo.message}</p>
-                    </div>
-                    <div className=' w-full flex justify-center my-2'>
-                      {
-                        (() => {
-                          console.log(memo.amount);
-
-                          return <></>
-                        })()
-
-                      }
-                      {/* <h2 className='text-xl text-Cye font-bold'>{getEth(memo.amount)} <span className='text-xs text-Black'>Eth</span></h2> */}
-                    </div>
-                    <div className=' w-full flex justify-center'>
-                      <div onClick={() => saveToClipboard(memo.from)} className="bg-Cf4 cursor-pointer py-1 px-2 rounded-3xl">
-                        <p className='text-xs'>{memo.from}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                ))}
+            </div>
+            <button
+              disabled={canWithdraw}
+              onClick={withdraw}
+              className="btn btn-active  btn-wide btn-accent"
+            >
+              Withdraw
+            </button>
           </div>
         </div>
+        <div className="divider divider-horizontal"></div>
+        <div className="w-96 grid gap-y-4 rounded-xl bg-base-300 p-2 place-items-center ">
+          {loading ? (
+            <>
+              <div className="skeleton bg-base-200 w-full h-40"></div>
+              <div className="skeleton bg-base-200 w-full h-40"></div>
+              <div className="skeleton bg-base-200 w-full h-40"></div>
+            </>
+          ) : data?.memos.length == 0 ? (
+            <h2>Your not have somthing</h2>
+          ) : (
+            data?.memos.map((item) => {
+              return (
+                <div key={item.timestamp} className="w-full">
+                  <Memo mode="end" {...item} />
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
-export default Profile
-
+export default Profile;

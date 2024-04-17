@@ -2,19 +2,20 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   MemoEvent as MemoEventEvent,
   SingUpEvent as SingUpEventEvent,
-} from "../generated/Contract/Contract";
-import { MemoEvent, SingUpEvent } from "../generated/schema";
+} from "../generated/BuyMeACoffe/BuyMeACoffe";
+import { Memo, SingUp } from "../generated/schema";
 
-const getID = (from: Address, to: Address = new Address(0)): Bytes =>
-  Bytes.fromHexString(from.toHexString() + to.toHexString());
+const getID = (from: Address, time: BigInt): Bytes =>
+  Bytes.fromHexString(from.toHexString() + time.toHexString());
 
 export function handleMemoEvent(event: MemoEventEvent): void {
-  let entity = MemoEvent.load(getID(event.params.to, event.params.from));
+  let entity = Memo.load(getID(event.params.to, event.params.timestamp));
 
   if (!entity) {
-    entity = new MemoEvent(getID(event.params.to, event.params.from));
+    entity = new Memo(getID(event.params.to, event.params.timestamp));
   }
 
+  entity.to = event.params.to;
   entity.from = event.params.from;
   entity.timestamp = event.params.timestamp;
   entity.amount = event.params.amount;
@@ -29,10 +30,10 @@ export function handleMemoEvent(event: MemoEventEvent): void {
 }
 
 export function handleSingUpEvent(event: SingUpEventEvent): void {
-  let entity = SingUpEvent.load(getID(event.params.from));
+  let entity = SingUp.load(getID(event.params.from, event.params.timestamp));
 
   if (!entity) {
-    entity = new SingUpEvent(getID(event.params.from));
+    entity = new SingUp(getID(event.params.from, event.params.timestamp));
   }
 
   entity.from = event.params.from;

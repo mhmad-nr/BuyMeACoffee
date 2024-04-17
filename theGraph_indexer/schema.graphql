@@ -1,4 +1,4 @@
-type MemoEvent @entity(immutable: true) {
+type Memo @entity(immutable: true) {
   id: Bytes!
   to: Bytes! # address
   from: Bytes! # address
@@ -11,7 +11,7 @@ type MemoEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type SingUpEvent @entity(immutable: true) {
+type SingUp @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   timestamp: BigInt! # uint256

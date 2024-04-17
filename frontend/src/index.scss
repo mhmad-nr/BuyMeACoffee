@@ -16,7 +16,55 @@ body {
 #root {
   @apply w-full ;
 }
+@layer base {
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 900;
+      src: url('./assets/fonts/Roboto-Black.ttf') format('truetype');
+  }
 
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 700;
+      src: url('./assets/fonts/Roboto-Bold.ttf') format('truetype');
+
+  }
+
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 500;
+      src: url('./assets/fonts/Roboto-Medium.ttf') format('truetype');
+
+  }
+
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 400;
+      src: url('./assets/fonts/Roboto-Regular.ttf') format('truetype');
+
+  }
+
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 300;
+      src: url('./assets/fonts/Roboto-Light.ttf') format('truetype');
+
+  }
+
+  @font-face {
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 100;
+      src: url('./assets/fonts/Roboto-Thin.ttf') format('truetype');
+
+  }
+ 
+}
 .radius {
   border-radius: 0% 0% 50% 50% / 0% 0% 5% 5% ;
 }
@@ -26,14 +74,14 @@ body {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 900;
-    src: url('./assets/font/Roboto-Black.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Black.ttf') stateat('truetype');
   }
 
   @font-face {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 700;
-    src: url('./assets/font/Roboto-Bold.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Bold.ttf') stateat('truetype');
 
   }
 
@@ -41,7 +89,7 @@ body {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 500;
-    src: url('./assets/font/Roboto-Medium.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Medium.ttf') stateat('truetype');
 
   }
 
@@ -49,7 +97,7 @@ body {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 400;
-    src: url('./assets/font/Roboto-Regular.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Regular.ttf') stateat('truetype');
 
   }
 
@@ -57,7 +105,7 @@ body {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 300;
-    src: url('./assets/font/Roboto-Light.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Light.ttf') stateat('truetype');
 
   }
 
@@ -65,7 +113,7 @@ body {
     font-family: "Roboto";
     font-style: normal;
     font-weight: 100;
-    src: url('./assets/font/Roboto-Thin.ttf') format('truetype');
+    src: url('./assets/font/Roboto-Thin.ttf') stateat('truetype');
 
   }
 
@@ -92,5 +140,5 @@ body {
 }
 
 .modal-divider {
-  @apply w-full top-7 before_block before_w-full before_h-0.5 before_bg-Cf4 before_absolute before_top-8 before_left-0;
+  @apply w-full top-7 before_block before_w-full before_h-0.5 before_bg-Green before_absolute before_top-8 before_left-0;
 }

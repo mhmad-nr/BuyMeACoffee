@@ -16,7 +16,7 @@ export type TypeBTNProps = {
     disable: boolean,
     type: 'colored' | 'default',
     buttonStyle: TypeSize | "full",
-    buttonText: "White" | "Black",
+    buttonText: "white" | "Black",
     onClick: () => void
 }
 
@@ -26,11 +26,11 @@ export type TypeBTNProps = {
 // }
 // type ButtonColored = {
 //     type: 'colored',
-//     buttonText: "White",
+//     buttonText: "white",
 //     color: string,
 // }
 
-export type TypeForm<T> = {
+export type Typestate<T> = {
     fullName: string,
     img: T,
     discription: string

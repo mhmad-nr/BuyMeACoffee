@@ -1,10 +1,10 @@
 import { PropsWithChildren } from 'react'
-import { Header, Footer } from '../components'
+import { Navbar, Footer } from '../components'
 
 
 export const MainLayout = ({ children }: PropsWithChildren) => (
     <>
-        <Header />
+        <Navbar />
         <div className=' pt-[91px]'>
             {children}
         </div>
