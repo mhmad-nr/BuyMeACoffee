@@ -24,6 +24,7 @@
 pragma solidity ^0.8.19;
 
 // Error
+error BuyMeACoffe__SenderShouldBeAnotherAddress();
 error BuyMeACoffe__SignedUpBefore();
 error BuyMeACoffe__NotSignedUpBefore();
 error BuyMeACoffe__BalanceIsZero();
@@ -120,6 +121,8 @@ contract BuyMeACoffee {
         address to
     ) external payable isUserExist(to) {
         // check if msg.value is less than MINIMUN_COFFEE_PRICE revert an error
+        if (msg.sender == to)
+            revert BuyMeACoffe__SenderShouldBeAnotherAddress();
         if (msg.value < MINIMUN_COFFEE_PRICE)
             revert BuyMeACoffe__ValueMustBeMoreThanOneGwei();
 
