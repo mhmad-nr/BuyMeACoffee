@@ -29,6 +29,9 @@ export const saveToClipboard = (text: string) => {
     theme: "light",
   });
 };
+
+export const roundDecimal = (value: number) => Math.round(value * 1e6) / 1e6;
+
 export function concat<T>(one: T[], two: T[]): T[] {
   const c = one.concat(two);
   return c.filter((item, pos) => c.indexOf(item) === pos);

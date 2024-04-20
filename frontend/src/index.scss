@@ -140,5 +140,8 @@ body {
 }
 
 .modal-divider {
-  @apply w-full top-7 before_block before_w-full before_h-0.5 before_bg-Green before_absolute before_top-8 before_left-0;
+  @apply w-full top-7 before_block before_w-full before_h-0.5 before_bg-green before_absolute before_top-8 before_left-0;
+}
+.bg-shadow {
+  @apply bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40;
 }

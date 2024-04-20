@@ -13,7 +13,6 @@
   "dependencies": {
     "@apollo/client": "^3.8.10",
     "@metamask/jazzicon": "^2.0.0",
-    "@metamask/sdk-react": "^0.14.2",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.7",
     "ethers": "^6.10.0",
@@ -26,6 +25,8 @@
     "react-toastify": "^10.0.4"
   },
   "devDependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-scroll": "^1.8.10",

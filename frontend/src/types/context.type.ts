@@ -5,7 +5,8 @@ export type accountType = string;
 export type storeType = {
   contract: ethers.Contract | null;
   accounts: accountType[];
-  activeAccount: string;
+  account: accountType;
+  isSingedUp: boolean;
 };
 
 export enum LocalStorageEnum {
@@ -28,22 +29,22 @@ export enum Action {
   INIT_ACCOUNTS = "INIT_ACCOUNTS",
   CHANGE_ACCOUNT = "CHANGE_ACCOUNT",
   RESET_ACCOUNTS = "RESET_ACCOUNTS",
-  FIND = "FIND",
-  LOGIN = "DECREASE",
+  SIGN_UP = "SIGN_UP",
 }
 
 type Payload = {
   [Action.INIT_ACCOUNTS]: {
-    activeAccount: string;
+    account: string;
     accounts: string[];
   };
   [Action.CHANGE_ACCOUNT]: {
-    activeAccount: string;
+    account: string;
   };
   [Action.CONTRACT]: {
     contract: ethers.Contract;
   };
   [Action.RESET_ACCOUNTS]: {};
+  [Action.SIGN_UP]: {};
 };
 
 export type Actions = ActionMap<Payload>[keyof ActionMap<Payload>];

@@ -1,12 +1,12 @@
 import React, { ReactNode, useReducer } from "react";
 import { Actions, constextType, storeType } from "../types";
 import { reducer } from "./reducer";
-import { ethers } from "ethers";
 
 const initStore: storeType = {
   contract: null,
+  isSingedUp: false,
   accounts: [],
-  activeAccount: "",
+  account: "",
 };
 
 type propsType = {

@@ -1,14 +1,13 @@
 import { Action, accountType } from "../types";
 import { useStore } from ".";
-import storage from "../utils/storage";
 import { ethers } from "ethers";
 
 export const useAction = () => {
   const { setStore } = useStore();
-  const changeAccount = (activeAccount: accountType) => {
+  const changeAccount = (account: accountType) => {
     setStore({
       type: Action.CHANGE_ACCOUNT,
-      payload: { activeAccount },
+      payload: { account },
     });
   };
   const resetAccounts = () => {
@@ -17,26 +16,20 @@ export const useAction = () => {
       payload: {},
     });
   };
-  const initAccounts = (
-    activeAccount: accountType,
-    accounts: accountType[]
-  ) => {
+  const initAccounts = (accounts: accountType[]) => {
     setStore({
       type: Action.INIT_ACCOUNTS,
       payload: {
-        activeAccount,
+        account: accounts[0],
         accounts,
       },
     });
   };
-  const readAccounts = (
-    activeAccount: accountType,
-    accounts: accountType[]
-  ) => {
+  const readAccounts = (account: accountType, accounts: accountType[]) => {
     setStore({
       type: Action.INIT_ACCOUNTS,
       payload: {
-        activeAccount,
+        account,
         accounts,
       },
     });
@@ -50,6 +43,12 @@ export const useAction = () => {
       },
     });
   };
+  const setSingedUp = () => {
+    setStore({
+      type: Action.SIGN_UP,
+      payload: {},
+    });
+  };
 
   return {
     changeAccount,
@@ -57,5 +56,6 @@ export const useAction = () => {
     resetAccounts,
     readAccounts,
     setContract,
+    setSingedUp,
   };
 };

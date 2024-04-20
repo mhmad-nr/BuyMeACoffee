@@ -5,7 +5,7 @@ enum Action {
     ACCOUNTS = "ACCOUNTS",
 }
 // save the account instateation
-const saveAccount = (activeAccount: accountType) => localStorage.setItem(Action.ACCOUNT, activeAccount);
+const saveAccount = (account: accountType) => localStorage.setItem(Action.ACCOUNT, account);
 const saveAccounts = (accounts: accountType[]) => localStorage.setItem(Action.ACCOUNTS, JSON.stringify(accounts));
 
 // save the account instateation

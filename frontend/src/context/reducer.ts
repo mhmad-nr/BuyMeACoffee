@@ -6,19 +6,24 @@ export function reducer(store: storeType, action: Actions): storeType {
     case Action.INIT_ACCOUNTS:
       return {
         ...store,
-        activeAccount: payload.activeAccount,
+        account: payload.account,
         accounts: payload.accounts,
       };
 
     case Action.CHANGE_ACCOUNT:
       return {
         ...store,
-        activeAccount: payload.activeAccount,
+        account: payload.account,
       };
     case Action.CONTRACT:
       return {
         ...store,
         contract: payload.contract,
+      };
+    case Action.SIGN_UP:
+      return {
+        ...store,
+        isSingedUp: true,
       };
 
     default:
