@@ -11,6 +11,11 @@
   },
   {
     "inputs": [],
+    "name": "BuyMeACoffe__SenderShouldBeAnotherAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "BuyMeACoffe__SignedUpBefore",
     "type": "error"
   },
