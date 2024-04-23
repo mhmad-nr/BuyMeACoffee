@@ -6,25 +6,27 @@ type Props = {
   mode: "end" | "start";
 } & memo;
 
-export const Memo = ({ message, timestamp, amount, from, mode }: Props) => {
+export const Memo = ({
+  name,
+  timestamp,
+  message,
+  amount,
+  from,
+  mode,
+}: Props) => {
   return (
-    <>
-      <div className={`chat chat-${mode}`}>
-        <div className="chat-image avatar">
-          <div className="w-10 rounded-full">
-            <MetaMaskAvatar address={from} size={40} />
-          </div>
+    <div className="w-full flex items-center gap-x-2">
+      {mode === "start" && <MetaMaskAvatar address={from} size={40} />}
+      <div className="grid gap-1">
+        <p className="text-xs font-light">
+          Supported: {convertETH(amount)} ETH
+        </p>
+        <div className="p-2 bg-mid-gray bg-opacity-40 rounded-md">
+          <p className="text-sm text-gray">{message}</p>
         </div>
-        <div className="chat-header">
-          <time className="text-xs opacity-50">
-            {getTime(parseInt(timestamp))}
-          </time>
-        </div>
-        <div className="chat-bubble ">{message}</div>
-        <div className="chat-footer opacity-50">
-          Send: {convertETH(amount)} ETH
-        </div>
+        <time className="text-xs opacity-50">{getTime(timestamp)}</time>
       </div>
-    </>
+      {mode === "end" && <MetaMaskAvatar address={from} size={40} />}
+    </div>
   );
 };

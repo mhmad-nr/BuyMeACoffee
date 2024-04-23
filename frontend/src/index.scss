@@ -145,3 +145,26 @@ body {
 .bg-shadow {
   @apply bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40;
 }
+
+.inner-1 {
+  box-shadow: inset 0 0 100px -30px #fafafa,
+    inset 0px 0px max(60px, 6vw) max(60px, 6vw) #ffb74b, 0 0 120px 80px #ffb74b;
+}
+.inner-2 {
+  width: min(1440px, 100%);
+  position: absolute;
+  aspect-ratio: 1;
+  top: max(-720px, -50vw);
+  right: max(-720px, -50vw);
+  border-radius: 50%;
+  background-color: #fafafa;
+  filter: blur(4px);
+  box-shadow: inset 0 0 100px -30px #fafafa,
+    inset 0px 0px 30vw 30vw rgb(255 109 109), 0 0 120px 80px rgb(255 109 109);
+}
+
+.outer {
+  width: 99vw;
+  height: 80vh;
+  position: relative;
+}

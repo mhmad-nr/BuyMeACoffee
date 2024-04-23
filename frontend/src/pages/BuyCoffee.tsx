@@ -21,7 +21,7 @@ type State = {
 const initState = {
   loading: false,
   value: 1,
-  ethPrice:1,
+  ethPrice: 1,
   name: "",
   text: "",
 };
@@ -137,15 +137,15 @@ const BuyCoffee = () => {
             <div className="mt-4">
               {loading ? (
                 <div className="grid gap-y-2">
-                  <MemoSkeleton bubbleMode="end" />
-                  <MemoSkeleton bubbleMode="end" />
-                  <MemoSkeleton bubbleMode="end" />
+                  <MemoSkeleton bubbleMode="start" />
+                  <MemoSkeleton bubbleMode="start" />
+                  <MemoSkeleton bubbleMode="start" />
                 </div>
               ) : (
                 data?.memos.map((memo) => {
                   return (
                     <>
-                      <Memo mode="end" {...memo} />
+                      <Memo mode="start" {...memo} />
                     </>
                   );
                 })
@@ -154,18 +154,7 @@ const BuyCoffee = () => {
           </div>
           <div className="w-96 h-fit flex flex-col gap-y-4 border border-mid-gray shadow-xl p-8 pt-6 rounded-xl">
             <h2 className="text-C4c text-2xl font-semibold"></h2>
-            <label className="block">
-              <span className="block text-sm font-medium text-gray">Name:</span>
-              <input
-                value={state.name}
-                onChange={setInput}
-                placeholder="Name..."
-                disabled={state.loading}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-mid-gray rounded-md text-sm shadow-sm placeholder-gray
-      focus_outline-none focus_border-blue focus:ring-1 focus_ring-orange
-      disabled_bg- disabled:text-slate-500 disabled_border-black disabled_shadow-none"
-              />
-            </label>
+
             <div className="w-full relative overflow-hidden flex justify-between items-center gap-x-2 rounded-md border border-blue border-opacity-40 bg-C5f p-4">
               {state.loading && (
                 <div className="w-full h-full bg-black bg-opacity-20 absolute top-0 left-0"></div>
@@ -214,16 +203,22 @@ const BuyCoffee = () => {
               </div>
             </div>
             <label className="block">
-              <span className="block text-sm font-medium text-gray">
-                Message:
-              </span>
+              <input
+                value={state.name}
+                onChange={setInput}
+                placeholder="Name of @yoursocial"
+                disabled={state.loading}
+                className="mt-1 block w-full p-3 text-lg bg-mid-gray bg-opacity-30  border-2 border-mid-gray border-opacity-30 rounded-lg text-sm shadow-sm placeholder-gray
+                focus_outline-none focus_border-blue focus:ring-1 focus_ring-blue focus_bg-white"
+              />
+            </label>
+            <label className="block">
               <textarea
                 value={state.text}
                 onChange={setTextarea}
-                className=" mt-1 block w-full px-3 py-2 bg-white border border-mid-gray rounded-md text-sm shadow-sm placeholder-gray
-              focus_outline-none focus_border-blue focus:ring-1 focus_ring-orange
-              disabled_bg-black disabled:text-slate-500 disabled_border-black disabled_shadow-none"
-                placeholder="Say something nice... (optional)"
+                className=" mt-1 block w-full px-3 py-2 bg-mid-gray bg-opacity-30  border-2 border-mid-gray border-opacity-30 rounded-lg text-sm shadow-sm placeholder-gray
+              focus_outline-none focus_border-blue focus:ring-1 focus_ring-blue focus_bg-white"
+                placeholder="Say something nice"
               ></textarea>
             </label>
             <button onClick={onBuy} className="btn btn-outline btn-info">

@@ -8,6 +8,7 @@ module.exports = {
     daisyui: {
       themes: ["light"],
     },
+
     screens: {
       "2xl": { max: "1535px" },
 

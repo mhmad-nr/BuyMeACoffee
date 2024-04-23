@@ -6,6 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { isValidAddress } from "../helpers";
 import { useAction, useStore } from "../hooks";
 import { ContractError } from "../types";
+import Signup from "../assets/images/signup.jpg";
 
 const Home = () => {
   const { store } = useStore();
@@ -80,8 +81,22 @@ const Home = () => {
   };
   return (
     <>
-      <div className="w-full h-[calc(100vh-180px)] flex justify-center items-center">
-        <div className="w-[600px]">
+      <div className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center">
+        {/* <div className="absolute top-0 left-0 z-0">
+          <div className="outer">
+            <div className="inner-1"></div>
+          </div>
+          <div className="outer">
+            <div className="inner-2"></div>
+          </div>
+          <div className="outer">
+            <div className="inner-3"></div>
+          </div>
+          <div className="outer">
+            <div className="inner-4"></div>
+          </div>
+        </div> */}
+        <div className="relative z-50 w-[600px]">
           <h1 className="text-6xl sm_text-3xl text-center font-medium text-C22 mb-4">
             A supporter is worth a thousand followers.
           </h1>
@@ -116,42 +131,47 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="w-full border-y-2 h-[50vh] flex items-center md_flex-col justify-evenly">
-        <div>
-          <h2 className="w-[350px] text-3xl font-bold">
-            Join & Receive Support Today!
-          </h2>
-          <p className="w-[450px] mt-6 text-justify  font-semibold">
-            Sign up for free and pay only the gas fee for your first
-            transaction. Start receiving support from our community of
-            contributors—whether you're a creator, artist, or entrepreneur,
-            we're here to back you up!
-          </p>
-        </div>
-        {isSingedUp ? (
-          <div className="grid gap-y-4">
-            <p className="font-semibold text-center bg-gradient-to-r from-red to-blue bg-clip-text text-transparent ">
-              See {"  "}
-              <span className="font-bold text-2xl">Receives</span>
+      <div className="w-full relative z-50 md_flex-col justify-evenly">
+        <div className="w-[1000px] mx-auto flex items-center h-screen">
+          <div className="flex-1">
+            <h2 className="w-[350px] text-3xl font-bold">
+              Join & Receive Support Today!
+            </h2>
+            <p className="w-[450px] mt-6 text-justify  font-semibold">
+              Sign up for free and pay only the gas fee for your first
+              transaction. Start receiving support from our community of
+              contributors—whether you're a creator, artist, or entrepreneur,
+              we're here to back you up!
             </p>
-            <Link
-              className="btn btn-wide btn-outline btn-primary"
-              to={"profile"}
-            >
-              Go Profile
-            </Link>
+            <div className="mt-4">
+              {isSingedUp ? (
+                <div className="grid gap-y-4">
+                  <p className="font-semibold text-center bg-gradient-to-r from-red to-blue bg-clip-text text-transparent ">
+                    See {"  "}
+                    <span className="font-bold text-2xl">Receives</span>
+                  </p>
+                  <Link
+                    className="btn btn-wide btn-outline btn-primary"
+                    to={"profile"}
+                  >
+                    Go Profile
+                  </Link>
+                </div>
+              ) : (
+                <button
+                  disabled={!true}
+                  onClick={singup}
+                  className="btn btn-wide btn-outline btn-primary"
+                >
+                  Sing up
+                </button>
+              )}
+            </div>
           </div>
-        ) : (
-          <button
-            disabled={!true}
-            onClick={singup}
-            className="btn btn-wide btn-outline btn-primary"
-          >
-            Sing up
-          </button>
-        )}
+          <img src={Signup} className="w-96 rounded-lg" alt="" />
+        </div>
       </div>
-      <div className="w-full bg-CfC6 py-14">
+      <div className="w-full relative z-50 bg-CfC6 py-14">
         <h2 className="text-base text-center font-semibold text- text-C4 tracking-widest">
           DONATIONS
         </h2>

@@ -2,7 +2,7 @@ export type memo = {
   id: string;
   to: string;
   from: string;
-  timestamp: string;
+  timestamp: number;
   message: string;
   name: string;
   blockTimestamp: string;
