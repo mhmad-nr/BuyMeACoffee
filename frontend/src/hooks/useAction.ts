@@ -43,10 +43,10 @@ export const useAction = () => {
       },
     });
   };
-  const setSingedUp = () => {
+  const setSingedUp = (isSignup: boolean) => {
     setStore({
       type: Action.SIGN_UP,
-      payload: {},
+      payload: { isSignup },
     });
   };
 

@@ -14,7 +14,7 @@ export const Navbar = () => {
   const { store } = useStore();
   const { contract, account, accounts } = store;
 
-  const { initAccounts, changeAccount, setSingedUp } = useAction();
+  const { initAccounts, changeAccount, singedUp } = useAction();
   const navigate = useNavigate();
 
   const setAccount = async (method: string) => {
@@ -52,7 +52,7 @@ export const Navbar = () => {
   //       type: "success",
   //       autoClose: 500,
   //     });
-  //     setSingedUp();
+  //     singedUp();
   //     navigate("/profile");
   //   } catch (error: any) {
   //     console.error(error);

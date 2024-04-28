@@ -5,8 +5,19 @@ import { ethers } from "ethers";
 import { useNavigate, Link } from "react-router-dom";
 import { isValidAddress } from "../helpers";
 import { useAction, useStore } from "../hooks";
-import { ContractError } from "../types";
+import { ContractError, memo } from "../types";
 import Signup from "../assets/images/signup.jpg";
+import { useQuery } from "@apollo/client";
+import { GET_MEMO_LAST } from "../graphql/memoLast";
+import { Avatar, Memo } from "../components";
+import { useGSAP } from "@gsap/react";
+import { MetaMaskAvatar } from "react-metamask-avatar";
+
+import gsap from "gsap";
+import { ReactComponent as ArrowRight } from "../assets/icons/arrow.svg";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
   const { store } = useStore();
@@ -17,11 +28,50 @@ const Home = () => {
     searchDisabled: false,
     searchText: "",
   });
+
+  const { data, loading } = useQuery<{
+    memos: memo[];
+  }>(GET_MEMO_LAST, {
+    variables: {
+      first: 5,
+    },
+  });
+
+  const trigger = useRef<HTMLDivElement>(null);
+  const pices = useRef<HTMLDivElement[]>([]);
+
   const { setSingedUp } = useAction();
 
   const toastId = useRef<any>();
   const isSearchAddressValid = isValidAddress(state.searchText);
+  useGSAP(
+    (context, contextSafe) => {
+      // <-- there it is
+      // ---------------------------------------------------------------------
 
+      let tl_1 = gsap.timeline({
+        scrollTrigger: {
+          trigger: trigger.current,
+          start: "top 60%",
+          end: "bottom 40%",
+          markers: true,
+          scrub: true,
+        },
+      });
+      pices.current.map((pice) => {
+        tl_1.from(pice, {
+          opacity: 0,
+          duration: 0.5,
+          ease: "back.out(1.4)",
+          transform: "translate3d(0, 3vw, 0)",
+        });
+      });
+      return () => {
+        // <-- cleanup (remove listeners here)
+      };
+    },
+    { dependencies: [] }
+  );
   const searchAddress = async () => {
     if (!isSearchAddressValid) {
       return toast.error("Please enter an valid address");
@@ -53,7 +103,7 @@ const Home = () => {
       toastId.current = toast.info("Please wait...", { autoClose: false });
       const tx = await contract.singUp();
       await tx.wait();
-      setSingedUp();
+      setSingedUp(true);
 
       toast.update(toastId.current, {
         type: "info",
@@ -72,16 +122,24 @@ const Home = () => {
             autoClose: 2000,
           });
           setTimeout(() => navigate("/profile"), 1000);
-          setSingedUp();
+          setSingedUp(true);
         }
       } else {
         console.log(`Error in widthrawContract:`, error);
       }
     }
   };
+
+  console.log(pices);
+
   return (
     <>
-      <div className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center">
+      <div
+        onClick={() => {
+          console.log(pices);
+        }}
+        className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center"
+      >
         {/* <div className="absolute top-0 left-0 z-0">
           <div className="outer">
             <div className="inner-1"></div>
@@ -96,6 +154,7 @@ const Home = () => {
             <div className="inner-4"></div>
           </div>
         </div> */}
+        <div className="absolute top-0 left-0 z-0"></div>
         <div className="relative z-50 w-[600px]">
           <h1 className="text-6xl sm_text-3xl text-center font-medium text-C22 mb-4">
             A supporter is worth a thousand followers.
@@ -169,6 +228,27 @@ const Home = () => {
             </div>
           </div>
           <img src={Signup} className="w-96 rounded-lg" alt="" />
+        </div>
+      </div>
+      <div ref={trigger} className="w-full ">
+        <h2 className="text-3xl font-semibold text-center">
+          The latest support
+        </h2>
+        <div className="w-full flex flex-col items-center gap-y-4 mt-8">
+          {data?.memos.map((memo, i) => {
+            return (
+              <div
+                ref={(el) => el && (pices.current[i] = el)}
+                className="flex items-center"
+              >
+                <Memo key={memo.id} mode="start" {...memo} />
+                <ArrowRight />
+                <span className="ml-4">
+                  <Avatar address={memo.to} />
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="w-full relative z-50 bg-CfC6 py-14">

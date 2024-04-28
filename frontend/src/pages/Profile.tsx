@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ethers } from "ethers";
-import { useStore } from "../hooks";
+import { useAction, useStore } from "../hooks";
 import { useQuery } from "@apollo/client";
 import { ContractError, memo } from "../types/schema.type";
 import { bigIntToInt, convertETH, rString } from "../helpers";
@@ -8,12 +7,13 @@ import { GET_MEMO } from "../graphql";
 import { toast } from "react-toastify";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { Memo } from "../components";
+import { Link } from "react-router-dom";
+import { ethers } from "ethers";
 
 type StateType = {
   currentTab: Tabs;
   balance: number;
   loading: boolean;
-  isSignedIn: boolean;
 };
 
 enum Tabs {
@@ -23,16 +23,20 @@ enum Tabs {
 
 const Profile = () => {
   const { store } = useStore();
-  const { contract, account } = store;
+  const { setSingedUp } = useAction();
+  const { contract, account, isSingedUp } = store;
 
   const [state, setState] = useState<StateType>({
     currentTab: Tabs.RECIVED,
     balance: 0,
-    loading: false,
-    isSignedIn: false,
+    loading: true,
   });
 
-  const { data: toMemos, loading: toMemosLoading } = useQuery<{
+  const {
+    data: toMemos,
+    loading: toMemosLoading,
+    refetch,
+  } = useQuery<{
     memos: memo[];
   }>(GET_MEMO({ to: true }), {
     variables: { to: account },
@@ -45,29 +49,33 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    get();
+    getData();
   }, [account, contract]);
 
-  const get = async () => {
+  const getData = async () => {
     if (!contract) return;
     setState({ ...state, loading: true });
 
     try {
-      const resBalance = await contract.getBalance();
-
-      const balance = bigIntToInt(resBalance);
-
-      setState({ ...state, balance, loading: false });
+      if (isSingedUp) {
+        const resBalance = await contract.getBalance();
+        const balance = bigIntToInt(resBalance);
+        setState({ ...state, balance, loading: false });
+      } else {
+        const address = await contract.getUser(account);
+        if (address != ethers.ZeroAddress) return setSingedUp(true);
+      }
     } catch (error: any) {
       if (error.data && contract) {
         const decodedError = contract.interface.parseError(error.data);
-
-        if (ContractError.BalanceIsZero == decodedError?.name) {
+        if (ContractError.NotSignedUpBefore == decodedError?.name) {
           toast("Your Balance in contract is zero!");
         }
       } else {
-        console.log(`Error in widthrawContract:`, error);
+        console.error(error);
       }
+    } finally {
+      setState({ ...state, loading: false });
     }
   };
   const toastId = useRef<any>();
@@ -107,8 +115,6 @@ const Profile = () => {
       }
     }
   };
-  // const toMemos = Memos?.memos.filter((memo) => memo.to == account);
-  // const fromMemos = Memos?.memos.filter((memo) => memo.from == account);
 
   const canWithdraw = state.balance <= 0 || state.loading;
   return (
@@ -120,27 +126,48 @@ const Profile = () => {
               <MetaMaskAvatar address={account} size={80} />
               <div>
                 <div className="flex items-center gap-x-4">
-                  <p className="text-lg font-semibold">Balance:</p>
-                  {state.loading ? (
-                    <div className="skeleton bg-black w-[53px] h-[28px]"></div>
+                  {!state.loading && !isSingedUp ? (
+                    <h2>
+                      Go to <span className="font-semibold ">Sign up</span> page
+                    </h2>
                   ) : (
-                    <p className="text-xl  font-bold">
-                      {convertETH(state.balance.toString())} ETH
-                    </p>
+                    <>
+                      <p className="text-lg font-semibold">Balance:</p>
+                      {state.loading ? (
+                        <div className="skeleton bg-black w-[53px] h-[28px]"></div>
+                      ) : (
+                        <p className="text-xl  font-bold">
+                          {convertETH(state.balance.toString())} ETH
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
-                <span className="text-xs font-semibold">
-                  {rString(account, 12)}
-                </span>
+                {!(!state.loading && !isSingedUp) && (
+                  <span className="text-xs font-semibold">
+                    {rString(account, 12)}
+                  </span>
+                )}
               </div>
             </div>
-            <button
-              disabled={canWithdraw}
-              onClick={withdraw}
-              className="btn btn-active  btn-accent"
-            >
-              Withdraw {convertETH(state.balance.toString())} ETH
-            </button>
+            {!isSingedUp ? (
+              <Link
+                to={"/signup"}
+                className={`btn btn-wide ${
+                  state.loading ? "btn-disabled" : ""
+                } btn-info`}
+              >
+                Sign Up
+              </Link>
+            ) : (
+              <button
+                disabled={canWithdraw}
+                onClick={withdraw}
+                className="btn btn-active  btn-accent"
+              >
+                Withdraw {convertETH(state.balance.toString())} ETH
+              </button>
+            )}
           </div>
         </div>
         <div className="divider divider-horizontal lg_divider-vertical  "></div>
@@ -169,6 +196,11 @@ const Profile = () => {
                     <div className="skeleton w-full h-32"></div>
                     <div className="skeleton w-full h-32"></div>
                   </div>
+                ) : toMemos?.memos.length == 0 ? (
+                  <div className="w-full flex items-center justify-center">
+                    <p className="text-2xl font-bold">Nothing</p>
+                    <span className="text-4xl">🥲</span>
+                  </div>
                 ) : (
                   toMemos?.memos.map((memo) => (
                     <Memo key={memo.id} mode="start" {...memo} />
@@ -195,6 +227,11 @@ const Profile = () => {
                     <div className="skeleton w-full h-32"></div>
                     <div className="skeleton w-full h-32"></div>
                     <div className="skeleton w-full h-32"></div>
+                  </div>
+                ) : fromMemos?.memos.length == 0 ? (
+                  <div className="w-full flex items-center justify-center">
+                    <p className="text-2xl font-bold">Nothing</p>
+                    <span className="text-4xl">🥲</span>
                   </div>
                 ) : (
                   fromMemos?.memos.map((memo) => (

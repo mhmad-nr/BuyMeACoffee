@@ -44,7 +44,9 @@ type Payload = {
     contract: ethers.Contract;
   };
   [Action.RESET_ACCOUNTS]: {};
-  [Action.SIGN_UP]: {};
+  [Action.SIGN_UP]: {
+    isSignup: boolean;
+  };
 };
 
 export type Actions = ActionMap<Payload>[keyof ActionMap<Payload>];

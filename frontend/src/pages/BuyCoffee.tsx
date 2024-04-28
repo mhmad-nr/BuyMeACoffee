@@ -8,8 +8,6 @@ import { GET_MEMO } from "../graphql";
 import { ContractError, memo } from "../types/schema.type";
 import { toast } from "react-toastify";
 import { roundDecimal } from "../helpers";
-import { ReactComponent as DollarSvg } from "../assets/icons/dollar.svg";
-import { ReactComponent as EthereumSvg } from "../assets/icons/ethereum.svg";
 
 type State = {
   loading: boolean;

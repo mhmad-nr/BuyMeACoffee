@@ -12,11 +12,13 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.8.10",
+    "@gsap/react": "^2.1.1",
     "@metamask/jazzicon": "^2.0.0",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.7",
     "ethers": "^6.10.0",
     "graphql": "^16.8.1",
+    "gsap": "^3.12.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-metamask-avatar": "^2.0.9",
