@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Memo, MemoSkeleton } from "../components";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../hooks";
 import { ethers } from "ethers";
 import { useQuery } from "@apollo/client";
@@ -11,12 +11,14 @@ import { roundDecimal } from "../helpers";
 
 type State = {
   loading: boolean;
+  isAddress: boolean;
   value: number;
   ethPrice: number;
   name: string;
   text: string;
 };
 const initState = {
+  isAddress: false,
   loading: false,
   value: 1,
   ethPrice: 1,
@@ -27,20 +29,55 @@ const BuyCoffee = () => {
   const { store } = useStore();
   const { contract, account } = store;
   const [state, setState] = useState<State>(initState);
+  const navigate = useNavigate();
 
   const { address } = useParams();
   const { data, loading } = useQuery<{ memos: memo[] }>(
-    GET_MEMO({ from: true, to: true }),
+    GET_MEMO({ to: true }),
     {
-      variables: { from: account, to: address },
+      variables: { to: address },
     }
   );
-  console.log(data);
 
   useEffect(() => {
     get();
-  }, []);
+  }, [contract]);
   const get = async () => {
+    if (!contract)
+      return toast.error("please first connect to your wallet", {
+        autoClose: 2000,
+      });
+
+    if (!state.isAddress) {
+      try {
+        toastId.current = toast.info("Please wait...");
+
+        const res = await contract.getUser(address);
+        if (res == ethers.ZeroAddress) {
+          toast.update(toastId.current, {
+            type: "error",
+
+            render: (
+              <span className="text-xs">
+                {address} <br /> is not Signed up yet
+              </span>
+            ),
+            autoClose: 4000,
+          });
+          navigate("/");
+          return;
+        }
+        console.log("asdasd");
+
+        toast.update(toastId.current, {
+          autoClose: 500,
+        });
+        setState({ ...state, isAddress: true });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     const res = await fetch(
       "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
     );
@@ -49,13 +86,6 @@ const BuyCoffee = () => {
     setState({ ...state, ethPrice });
   };
 
-  const setValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget;
-    const newValue = parseInt(value);
-    if (newValue <= 9) {
-      setState({ ...state, value: newValue });
-    }
-  };
   const setInput = (e: React.FormEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setState({ ...state, name: value });
@@ -67,15 +97,26 @@ const BuyCoffee = () => {
     setState({ ...state, text: value });
   };
   const onBuy = async () => {
-    if (!contract) return;
+    if (!contract) return toast.error("please first connect to your wallet");
+
+    if (state.name == "")
+      return toast.error("Please enter a name", {
+        autoClose: 2000,
+      });
+    console.log(address, account);
+
+    if (address == account)
+      return toast.error("You cannot send memo to yourself", {
+        autoClose: 2000,
+      });
+
     const value = ethers.parseEther(
       ethAmount(state.value).toFixed(6).toString()
     );
+
     try {
       setState({ ...state, loading: true });
-      toastId.current = toast.loading("Waiting for metamask...", {
-        autoClose: false,
-      });
+      toastId.current = toast.info("Waiting for metamask...");
 
       const txR = await contract.buyACoffee(state.name, state.text, address, {
         value,
@@ -104,7 +145,7 @@ const BuyCoffee = () => {
         }
         if (ContractError.SenderShouldBeAnotherAddress == decodedError?.name) {
           toast.update(toastId.current, {
-            type: "info",
+            type: "error",
             render: "You cannot send memo to yourself",
             autoClose: 2000,
           });
@@ -139,13 +180,14 @@ const BuyCoffee = () => {
                   <MemoSkeleton bubbleMode="start" />
                   <MemoSkeleton bubbleMode="start" />
                 </div>
+              ) : data?.memos.length == 0 ? (
+                <div className="w-full grid place-items-center">
+                  <p className="text-2xl">Still Nothing 😢</p>
+                  <p className="text-base mt-4">Be First 🤔</p>
+                </div>
               ) : (
-                data?.memos.map((memo) => {
-                  return (
-                    <>
-                      <Memo mode="start" {...memo} />
-                    </>
-                  );
+                data?.memos.map((memo, i) => {
+                  return <Memo key={memo.name + i} mode="start" {...memo} />;
                 })
               )}
             </div>
@@ -230,8 +272,3 @@ const BuyCoffee = () => {
 };
 
 export default BuyCoffee;
-
-// {
-//   "code": -32000,
-//   "message": "failed with 500000000 gas: insufficient funds for gas * price + value: address 0x6bEDAb3A759245A16ABeb16e2142629828C8c782 have 229297415862466858 want 5000000000000000000"
-// }

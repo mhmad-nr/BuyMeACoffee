@@ -14,7 +14,7 @@ export const Navbar = () => {
   const { store } = useStore();
   const { contract, account, accounts } = store;
 
-  const { initAccounts, changeAccount, singedUp } = useAction();
+  const { initAccounts, changeAccount } = useAction();
   const navigate = useNavigate();
 
   const setAccount = async (method: string) => {
@@ -83,7 +83,7 @@ export const Navbar = () => {
         <div className="flex justify-between items-center bg-white mx-auto py-4 px-8 rounded-full shadow-md max-w-[1023px] lg_max-w-[767px] ">
           <div className="flex items-center gap-x-8">
             <Link to="/">
-              <BMC />
+              <BMC id="icon" />
             </Link>
           </div>
           <div className="flex">

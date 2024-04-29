@@ -9,6 +9,13 @@ export type memo = {
   blockNumber: string;
   amount: string;
 };
+export type singup = {
+  id: string;
+  from: string;
+  timestamp: number;
+  blockTimestamp: string;
+  blockNumber: string;
+};
 export enum ContractError {
   SenderShouldBeAnotherAddress = "BuyMeACoffe__SenderShouldBeAnotherAddress",
   SignedUpBefore = "BuyMeACoffe__SignedUpBefore",

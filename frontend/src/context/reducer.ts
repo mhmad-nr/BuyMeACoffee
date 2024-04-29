@@ -13,7 +13,7 @@ export function reducer(store: storeType, action: Actions): storeType {
     case Action.CHANGE_ACCOUNT:
       return {
         ...store,
-        issingedUp: false,
+        isSingedUp: false,
         account: payload.account,
       };
     case Action.CONTRACT:
@@ -24,7 +24,7 @@ export function reducer(store: storeType, action: Actions): storeType {
     case Action.SIGN_UP:
       return {
         ...store,
-        issingedUp: true,
+        isSingedUp: true,
       };
 
     default:

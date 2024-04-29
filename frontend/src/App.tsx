@@ -10,8 +10,9 @@ declare global {
     ethereum?: any;
   }
 }
-// const url =  "https://api.studio.thegraph.com/query/960/buy-me-coffee/version/latest";
-const url = "https://api.studio.thegraph.com/query/960/buy-me-coffee/0.0.7";
+const url =
+  "https://api.studio.thegraph.com/query/960/buy-me-coffee/version/latest";
+// const url = "https://api.studio.thegraph.com/query/960/buy-me-coffee/0.0.7";
 
 const client = new ApolloClient({
   uri: url,

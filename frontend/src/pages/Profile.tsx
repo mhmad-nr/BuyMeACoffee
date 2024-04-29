@@ -7,7 +7,7 @@ import { GET_MEMO } from "../graphql";
 import { toast } from "react-toastify";
 import { MetaMaskAvatar } from "react-metamask-avatar";
 import { Memo } from "../components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 
 type StateType = {
@@ -35,14 +35,18 @@ const Profile = () => {
   const {
     data: toMemos,
     loading: toMemosLoading,
-    refetch,
+    error: toMemosError,
   } = useQuery<{
     memos: memo[];
   }>(GET_MEMO({ to: true }), {
     variables: { to: account },
   });
 
-  const { data: fromMemos, loading: fromMemosLoading } = useQuery<{
+  const {
+    data: fromMemos,
+    loading: fromMemosLoading,
+    error: fromMemosError,
+  } = useQuery<{
     memos: memo[];
   }>(GET_MEMO({ from: true }), {
     variables: { from: account },
@@ -60,6 +64,8 @@ const Profile = () => {
       if (isSingedUp) {
         const resBalance = await contract.getBalance();
         const balance = bigIntToInt(resBalance);
+        console.log(balance);
+        
         setState({ ...state, balance, loading: false });
       } else {
         const address = await contract.getUser(account);
@@ -74,9 +80,7 @@ const Profile = () => {
       } else {
         console.error(error);
       }
-    } finally {
-      setState({ ...state, loading: false });
-    }
+    } 
   };
   const toastId = useRef<any>();
 
@@ -95,7 +99,7 @@ const Profile = () => {
         await txR.wait(1);
         toast.update(toastId.current, {
           type: "success",
-          render: "Congratulation It Done",
+          render: "🥳 It Done",
           autoClose: 2000,
         });
       } catch (error: any) {
@@ -115,6 +119,42 @@ const Profile = () => {
       }
     }
   };
+  const navigate = useNavigate();
+
+  const singup = async () => {
+    if (!contract) return;
+
+    try {
+      toastId.current = toast.info("Please wait...", { autoClose: false });
+      const tx = await contract.singUp();
+      await tx.wait();
+      setSingedUp(true);
+
+      toast.update(toastId.current, {
+        type: "info",
+        render: "You have signed up successfully",
+        autoClose: 2000,
+      });
+      setTimeout(() => navigate("/profile"), 1000);
+    } catch (error: any) {
+      if (error.data) {
+        const decodedError = contract.interface.parseError(error.data);
+
+        if (ContractError.SignedUpBefore == decodedError?.name) {
+          toast.update(toastId.current, {
+            type: "info",
+            render: "you have signed up already",
+            autoClose: 2000,
+          });
+          setTimeout(() => navigate("/profile"), 1000);
+          setSingedUp(true);
+        }
+      } else {
+        console.log(`Error in widthrawContract:`, error);
+      }
+    }
+  };
+console.log(state);
 
   const canWithdraw = state.balance <= 0 || state.loading;
   return (
@@ -151,14 +191,14 @@ const Profile = () => {
               </div>
             </div>
             {!isSingedUp ? (
-              <Link
-                to={"/signup"}
+              <button
+                onClick={singup}
                 className={`btn btn-wide ${
                   state.loading ? "btn-disabled" : ""
                 } btn-info`}
               >
                 Sign Up
-              </Link>
+              </button>
             ) : (
               <button
                 disabled={canWithdraw}
@@ -190,7 +230,9 @@ const Profile = () => {
               className="tab-content bg-base-100 border-base-300 rounded-box p-6"
             >
               <div className="grid grid-y-2">
-                {toMemosLoading ? (
+              {toMemosError && <p className="text-center">Something went wrong</p>}
+                
+                {toMemosLoading && !toMemosError ? (
                   <div className="grid gap-y-2">
                     <div className="skeleton w-full h-32"></div>
                     <div className="skeleton w-full h-32"></div>
@@ -222,7 +264,8 @@ const Profile = () => {
               className="tab-content bg-base-100 border-base-300 rounded-box p-6"
             >
               <div className="grid grid-y-2">
-                {fromMemosLoading ? (
+                {fromMemosError && <p className="text-center">Something went wrong</p>}
+                {fromMemosLoading && !toMemosError ? (
                   <div className="grid gap-y-2">
                     <div className="skeleton w-full h-32"></div>
                     <div className="skeleton w-full h-32"></div>

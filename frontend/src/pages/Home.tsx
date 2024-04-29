@@ -5,17 +5,15 @@ import { ethers } from "ethers";
 import { useNavigate, Link } from "react-router-dom";
 import { isValidAddress } from "../helpers";
 import { useAction, useStore } from "../hooks";
-import { ContractError, memo } from "../types";
+import { ContractError, memo, singup } from "../types";
 import Signup from "../assets/images/signup.jpg";
 import { useQuery } from "@apollo/client";
-import { GET_MEMO_LAST } from "../graphql/memoLast";
-import { Avatar, Memo } from "../components";
+import { Avatar, Memo, MemoSkeleton } from "../components";
 import { useGSAP } from "@gsap/react";
-import { MetaMaskAvatar } from "react-metamask-avatar";
-
 import gsap from "gsap";
 import { ReactComponent as ArrowRight } from "../assets/icons/arrow.svg";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { GET_SING_UP, GET_MEMO_LAST } from "../graphql";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,6 +26,7 @@ const Home = () => {
     searchDisabled: false,
     searchText: "",
   });
+  const { setSingedUp } = useAction();
 
   const { data, loading } = useQuery<{
     memos: memo[];
@@ -36,11 +35,14 @@ const Home = () => {
       first: 5,
     },
   });
+  const { data: signUpData, loading: signUpLoading } = useQuery<{
+    singUps: singup[];
+  }>(GET_SING_UP);
+
+  console.log(signUpData);
 
   const trigger = useRef<HTMLDivElement>(null);
   const pices = useRef<HTMLDivElement[]>([]);
-
-  const { setSingedUp } = useAction();
 
   const toastId = useRef<any>();
   const isSearchAddressValid = isValidAddress(state.searchText);
@@ -49,17 +51,17 @@ const Home = () => {
       // <-- there it is
       // ---------------------------------------------------------------------
 
-      let tl_1 = gsap.timeline({
+      let tl_pices = gsap.timeline({
         scrollTrigger: {
           trigger: trigger.current,
           start: "top 60%",
           end: "bottom 40%",
-          markers: true,
-          scrub: true,
+          markers: false,
+          scrub: false,
         },
       });
       pices.current.map((pice) => {
-        tl_1.from(pice, {
+        tl_pices.from(pice, {
           opacity: 0,
           duration: 0.5,
           ease: "back.out(1.4)",
@@ -70,29 +72,55 @@ const Home = () => {
         // <-- cleanup (remove listeners here)
       };
     },
-    { dependencies: [] }
+    { dependencies: [data] }
   );
   const searchAddress = async () => {
     if (!isSearchAddressValid) {
-      return toast.error("Please enter an valid address");
+      return toast.error("Please enter an valid address", {
+        autoClose: 3000,
+      });
     }
-    console.log(state.searchText, account);
 
     if (state.searchText == account) {
-      return toast.error("Search address should not be your address");
+      return toast.error("Search address should not be your address", {
+        autoClose: 3000,
+      });
     }
 
-    if (!contract) return;
+    if (!contract) return toast.error("please first connect to your wallet");
 
     try {
-      const res = await contract.getUser(state.searchText);
+      toastId.current = toast.info("Please wait...", { autoClose: false });
 
+      const res = await contract.getUser(state.searchText);
       if (res == ethers.ZeroAddress) {
-        return toast.error(`${state.searchText} is not Signed up yet`);
+        toast.update(toastId.current, {
+          type: "error",
+
+          render: (
+            <span className="text-xs">
+              {state.searchText} <br /> is not Signed up yet
+            </span>
+          ),
+          autoClose: 2000,
+        });
+        return;
       }
+      toast.update(toastId.current, {
+        type: "success",
+
+        render: (
+          <span className="text-xs">
+            🥳{state.searchText} <br /> found
+          </span>
+        ),
+        autoClose: 2000,
+      });
       navigate("buycoffee/" + state.searchText);
     } catch (error) {
       console.log(error);
+    } finally {
+      setState({ ...state, searchText: "" });
     }
   };
 
@@ -102,12 +130,16 @@ const Home = () => {
     try {
       toastId.current = toast.info("Please wait...", { autoClose: false });
       const tx = await contract.singUp();
-      await tx.wait();
+      toast.update(toastId.current, {
+        render: "Wiating for transaction to be mined",
+      });
+      await tx.wait(1);
+
       setSingedUp(true);
 
       toast.update(toastId.current, {
         type: "info",
-        render: "You have signed up successfully",
+        render: "You have signed up successfully 🥳",
         autoClose: 2000,
       });
       setTimeout(() => navigate("/profile"), 1000);
@@ -125,12 +157,18 @@ const Home = () => {
           setSingedUp(true);
         }
       } else {
-        console.log(`Error in widthrawContract:`, error);
+        if (error.code == 4001) {
+          toast.update(toastId.current, {
+            type: "error",
+            render: <span className="text-xs">{error.message}</span>,
+            autoClose: 2000,
+          });
+        }
+        console.log(`Error in widthrawContract:`, error.code);
       }
+    } finally {
     }
   };
-
-  console.log(pices);
 
   return (
     <>
@@ -140,22 +178,11 @@ const Home = () => {
         }}
         className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center"
       >
-        {/* <div className="absolute top-0 left-0 z-0">
-          <div className="outer">
-            <div className="inner-1"></div>
-          </div>
-          <div className="outer">
-            <div className="inner-2"></div>
-          </div>
-          <div className="outer">
-            <div className="inner-3"></div>
-          </div>
-          <div className="outer">
-            <div className="inner-4"></div>
-          </div>
-        </div> */}
         <div className="absolute top-0 left-0 z-0"></div>
         <div className="relative z-50 w-[600px]">
+          <h2 className="text-2xl font-bold text-yellow text-center text-C22">
+            Buy Me A Coffee
+          </h2>
           <h1 className="text-6xl sm_text-3xl text-center font-medium text-C22 mb-4">
             A supporter is worth a thousand followers.
           </h1>
@@ -168,10 +195,12 @@ const Home = () => {
             className="w-full p-2 mt-4 flex justify-between bg-white rounded-full border-2 border-Cf4"
           >
             <input
+              value={state.searchText}
+              onKeyDown={(e) => e.key == "Enter" && searchAddress()}
               onChange={(e) =>
                 setState({ ...state, searchText: e.target.value })
               }
-              className="py-2 px-4 outline-none text-lg flex-1"
+              className="py-2 rounded-2xl px-4 outline-none text-lg flex-1"
               type="text"
               placeholder="Enter Address"
             />
@@ -191,8 +220,8 @@ const Home = () => {
         </div>
       </div>
       <div className="w-full relative z-50 md_flex-col justify-evenly">
-        <div className="w-[1000px] mx-auto flex items-center h-screen">
-          <div className="flex-1">
+        <div className="w-[1000px] mx-auto flex items-center h-screen md_flex-col md_items-center">
+          <div className="w-1/2">
             <h2 className="w-[350px] text-3xl font-bold">
               Join & Receive Support Today!
             </h2>
@@ -235,15 +264,62 @@ const Home = () => {
           The latest support
         </h2>
         <div className="w-full flex flex-col items-center gap-y-4 mt-8">
+          {data?.memos.length == 0 && (
+            <>
+              <div className="flex items-center">
+                <MemoSkeleton bubbleMode="start" />
+                <ArrowRight />
+                <span className="ml-4">
+                  <div className="skeleton w-[40px] h-[40px] rounded-full"></div>
+                </span>
+              </div>
+              <div className="flex items-center">
+                <MemoSkeleton bubbleMode="start" />
+                <ArrowRight />
+                <span className="ml-4">
+                  <div className="skeleton w-[40px] h-[40px] rounded-full"></div>
+                </span>
+              </div>
+              <div className="flex items-center">
+                <MemoSkeleton bubbleMode="start" />
+                <ArrowRight />
+                <span className="ml-4">
+                  <div className="skeleton w-[40px] h-[40px] rounded-full"></div>
+                </span>
+              </div>
+              <div className="flex items-center">
+                <MemoSkeleton bubbleMode="start" />
+                <ArrowRight />
+                <span className="ml-4">
+                  <div className="skeleton w-[40px] h-[40px] rounded-full"></div>
+                </span>
+              </div>
+              <div className="flex items-center">
+                <MemoSkeleton bubbleMode="start" />
+                <ArrowRight />
+                <span className="ml-4">
+                  <div className="skeleton w-[40px] h-[40px] rounded-full"></div>
+                </span>
+              </div>
+            </>
+          )}
           {data?.memos.map((memo, i) => {
             return (
               <div
+                key={memo.id}
                 ref={(el) => el && (pices.current[i] = el)}
                 className="flex items-center"
               >
                 <Memo key={memo.id} mode="start" {...memo} />
                 <ArrowRight />
-                <span className="ml-4">
+                <span
+                  onClick={() =>
+                    memo.to != account && navigate("buycoffee/" + memo.to)
+                  }
+                  className={`ml-4 ${
+                    memo.to != account ? "cursor-pointer" : ""
+                  }`}
+                >
                   <Avatar address={memo.to} />
                 </span>
               </div>
