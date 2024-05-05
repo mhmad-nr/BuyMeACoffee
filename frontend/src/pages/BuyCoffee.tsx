@@ -67,7 +67,6 @@ const BuyCoffee = () => {
           navigate("/");
           return;
         }
-        console.log("asdasd");
 
         toast.update(toastId.current, {
           autoClose: 500,
@@ -103,7 +102,6 @@ const BuyCoffee = () => {
       return toast.error("Please enter a name", {
         autoClose: 2000,
       });
-    console.log(address, account);
 
     if (address == account)
       return toast.error("You cannot send memo to yourself", {
@@ -125,6 +123,7 @@ const BuyCoffee = () => {
       toast.update(toastId.current, {
         render: "Wiating for transaction to be mined",
       });
+
       await txR.wait(1);
       toast.update(toastId.current, {
         type: "success",
@@ -151,7 +150,12 @@ const BuyCoffee = () => {
           });
         }
       } else {
-        console.log(`Error in widthrawContract:`, error);
+        toast.update(toastId.current, {
+          type: "error",
+          render: "Something went wrong please try again",
+          autoClose: 2000,
+        });
+        console.error(`Error in widthrawContract:`, error);
       }
     } finally {
       setState({ ...state, loading: false });
@@ -187,7 +191,14 @@ const BuyCoffee = () => {
                 </div>
               ) : (
                 data?.memos.map((memo, i) => {
-                  return <Memo key={memo.name + i} mode="start" {...memo} />;
+                  return (
+                    <Memo
+                      address={memo.from}
+                      key={memo.name + i}
+                      mode="start"
+                      {...memo}
+                    />
+                  );
                 })
               )}
             </div>

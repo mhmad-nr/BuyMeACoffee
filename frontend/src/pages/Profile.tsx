@@ -59,20 +59,21 @@ const Profile = () => {
   const getData = async () => {
     if (!contract) return;
     setState({ ...state, loading: true });
+    console.log(isSingedUp);
 
     try {
       if (isSingedUp) {
         const resBalance = await contract.getBalance();
         const balance = bigIntToInt(resBalance);
-        console.log(balance);
-        
+
         setState({ ...state, balance, loading: false });
       } else {
         const address = await contract.getUser(account);
         if (address != ethers.ZeroAddress) return setSingedUp(true);
+        setState({ ...state, loading: false });
       }
     } catch (error: any) {
-      if (error.data && contract) {
+      if (error.data) {
         const decodedError = contract.interface.parseError(error.data);
         if (ContractError.NotSignedUpBefore == decodedError?.name) {
           toast("Your Balance in contract is zero!");
@@ -80,7 +81,7 @@ const Profile = () => {
       } else {
         console.error(error);
       }
-    } 
+    }
   };
   const toastId = useRef<any>();
 
@@ -146,15 +147,18 @@ const Profile = () => {
             render: "you have signed up already",
             autoClose: 2000,
           });
-          setTimeout(() => navigate("/profile"), 1000);
           setSingedUp(true);
         }
       } else {
+        toast.update(toastId.current, {
+          type: "error",
+          render: "Something went wrong",
+          autoClose: 3000,
+        });
         console.log(`Error in widthrawContract:`, error);
       }
     }
   };
-console.log(state);
 
   const canWithdraw = state.balance <= 0 || state.loading;
   return (
@@ -168,7 +172,7 @@ console.log(state);
                 <div className="flex items-center gap-x-4">
                   {!state.loading && !isSingedUp ? (
                     <h2>
-                      Go to <span className="font-semibold ">Sign up</span> page
+                      Lets <span className="font-semibold ">Sign up</span> Now
                     </h2>
                   ) : (
                     <>
@@ -230,8 +234,10 @@ console.log(state);
               className="tab-content bg-base-100 border-base-300 rounded-box p-6"
             >
               <div className="grid grid-y-2">
-              {toMemosError && <p className="text-center">Something went wrong</p>}
-                
+                {toMemosError && (
+                  <p className="text-center">Something went wrong</p>
+                )}
+
                 {toMemosLoading && !toMemosError ? (
                   <div className="grid gap-y-2">
                     <div className="skeleton w-full h-32"></div>
@@ -245,7 +251,12 @@ console.log(state);
                   </div>
                 ) : (
                   toMemos?.memos.map((memo) => (
-                    <Memo key={memo.id} mode="start" {...memo} />
+                    <Memo
+                      key={memo.id}
+                      address={memo.to}
+                      mode="start"
+                      {...memo}
+                    />
                   ))
                 )}
               </div>
@@ -257,6 +268,7 @@ console.log(state);
               role="tab"
               className="tab"
               aria-label="Given"
+              readOnly={true}
               checked
             />
             <div
@@ -264,7 +276,9 @@ console.log(state);
               className="tab-content bg-base-100 border-base-300 rounded-box p-6"
             >
               <div className="grid grid-y-2">
-                {fromMemosError && <p className="text-center">Something went wrong</p>}
+                {fromMemosError && (
+                  <p className="text-center">Something went wrong</p>
+                )}
                 {fromMemosLoading && !toMemosError ? (
                   <div className="grid gap-y-2">
                     <div className="skeleton w-full h-32"></div>
@@ -278,7 +292,12 @@ console.log(state);
                   </div>
                 ) : (
                   fromMemos?.memos.map((memo) => (
-                    <Memo key={memo.id} mode="end" {...memo} />
+                    <Memo
+                      key={memo.id}
+                      address={memo.to}
+                      mode="end"
+                      {...memo}
+                    />
                   ))
                 )}
               </div>

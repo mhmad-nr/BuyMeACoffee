@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import landingImage from "../assets/images/landing-image.png";
 import { toast } from "react-toastify";
 import { ethers } from "ethers";
 import { useNavigate, Link } from "react-router-dom";
@@ -38,8 +37,6 @@ const Home = () => {
   const { data: signUpData, loading: signUpLoading } = useQuery<{
     singUps: singup[];
   }>(GET_SING_UP);
-
-  console.log(signUpData);
 
   const trigger = useRef<HTMLDivElement>(null);
   const pices = useRef<HTMLDivElement[]>([]);
@@ -172,12 +169,7 @@ const Home = () => {
 
   return (
     <>
-      <div
-        onClick={() => {
-          console.log(pices);
-        }}
-        className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center"
-      >
+      <div className="w-full h-[calc(100vh-91px)] overflow-x-hidden relative  flex justify-center items-center">
         <div className="absolute top-0 left-0 z-0"></div>
         <div className="relative z-50 w-[600px]">
           <h2 className="text-2xl font-bold text-yellow text-center text-C22">
@@ -220,8 +212,8 @@ const Home = () => {
         </div>
       </div>
       <div className="w-full relative z-50 md_flex-col justify-evenly">
-        <div className="w-[1000px] mx-auto flex items-center h-screen md_flex-col md_items-center">
-          <div className="w-1/2">
+        <div className="max-w-[1000px] mx-auto flex items-center gap-y-10 h-screen md_flex-col md_items-center">
+          <div className="w-1/2  md_w-full ">
             <h2 className="w-[350px] text-3xl font-bold">
               Join & Receive Support Today!
             </h2>
@@ -256,12 +248,12 @@ const Home = () => {
               )}
             </div>
           </div>
-          <img src={Signup} className="w-96 rounded-lg" alt="" />
+          <img src={Signup} className="max-w-96  md_w-full rounded-lg" alt="" />
         </div>
       </div>
       <div ref={trigger} className="w-full ">
         <h2 className="text-3xl font-semibold text-center">
-          The latest support
+          The latest supports
         </h2>
         <div className="w-full flex flex-col items-center gap-y-4 mt-8">
           {data?.memos.length == 0 && (
@@ -310,8 +302,9 @@ const Home = () => {
                 ref={(el) => el && (pices.current[i] = el)}
                 className="flex items-center"
               >
-                <Memo key={memo.id} mode="start" {...memo} />
-                <ArrowRight />
+                <Memo address={memo.from} key={memo.id} mode="both" {...memo} />
+
+                {/* <ArrowRight />
                 <span
                   onClick={() =>
                     memo.to != account && navigate("buycoffee/" + memo.to)
@@ -321,32 +314,10 @@ const Home = () => {
                   }`}
                 >
                   <Avatar address={memo.to} />
-                </span>
+                </span> */}
               </div>
             );
           })}
-        </div>
-      </div>
-      <div className="w-full relative z-50 bg-CfC6 py-14">
-        <h2 className="text-base text-center font-semibold text- text-C4 tracking-widest">
-          DONATIONS
-        </h2>
-        <div className="w-full mt-10 flex items-center gap-x-10 md_flex-col px-10 mx-auto">
-          <div className="flex-1">
-            <div className="max-w-[600px] sm_w-full">
-              <h1 className="text-4xl text-left font-bold text-C4c">
-                Easy Thanks with Coffee
-              </h1>
-              <h2 className="mx-auto text-lg text-left font-normal text-C4c mt-6">
-                Buy Me a Coffee makes supporting fun and easy. In just a couple
-                of taps, your fans can make the payment (buy you a coffee) and
-                leave a message. They don’t even have to create an account!
-              </h2>
-            </div>
-          </div>
-          <div className=" flex-1 mt-6">
-            <img src={landingImage} alt="image" />
-          </div>
         </div>
       </div>
     </>

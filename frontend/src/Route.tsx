@@ -5,6 +5,7 @@ import { useAction, useStore } from "./hooks";
 import { contractProvider } from "./helpers";
 import { address } from "./utils/contracts";
 import { ReactComponent as GITHUB } from "./assets/icons/github-icon.svg";
+import { ScrollTop } from "./components";
 
 const Home = lazy(() => import("./pages/Home"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -36,7 +37,8 @@ const AppRoute = () => {
         <div className="modal-box">
           <h3 className="font-bold text-lg">💢Attention💢</h3>
           <p className="py-4">
-            this App use{" "}
+            to use this app and interact with sepolia testnet you need to
+            install{" "}
             <a
               href="https://metamask.io/"
               target="_blank"
@@ -44,7 +46,7 @@ const AppRoute = () => {
             >
               Metamast
             </a>{" "}
-            to use this app and interact with sepolia testnet
+            if you did not
           </p>
           <p className="text-sm font-semibold">
             See Contract:{" "}
@@ -73,10 +75,38 @@ const AppRoute = () => {
       <Router>
         <MainLayout>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/buycoffee/:address" element={<BuyCoffee />} />
-            <Route path="*" element={<NotFound />} />
+            <Route
+              path="/"
+              element={
+                <ScrollTop>
+                  <Home />
+                </ScrollTop>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ScrollTop>
+                  <Profile />
+                </ScrollTop>
+              }
+            />
+            <Route
+              path="/buycoffee/:address"
+              element={
+                <ScrollTop>
+                  <BuyCoffee />
+                </ScrollTop>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <ScrollTop>
+                  <NotFound />
+                </ScrollTop>
+              }
+            />
           </Routes>
         </MainLayout>
       </Router>
