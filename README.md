@@ -5,7 +5,7 @@ a Buy me a Coffee clone which is decentralized and secure
 
 ## Documentation
 
-It is live [Buy Me A Coffee](https://choosealicense.com/licenses/mit/)
+It is live [Buy Me A Coffee](https://mhmadnr-buy-coffee.netlify.app)
 
 [Sepolia Contract Address](https://sepolia.etherscan.io/address/0x0FD0f69bA8B5EaE9F10D63C3b151C5eEcB182523)
 
